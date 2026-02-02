@@ -1,0 +1,46 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Environment / secrets
+.env
+.env.*
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model checkpoints (large binary files)
+checkpoints/
+*.pt
+*.pth
+
+# Dataset (downloaded; can be re-fetched)
+data/
+
+# Archives
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
