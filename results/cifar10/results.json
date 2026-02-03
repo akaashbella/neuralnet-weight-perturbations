@@ -1,0 +1,2526 @@
+{
+  "summary": [
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4824",
+      "acc_01": "0.48208",
+      "drop_at_01": "0.00031999999999998696"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5035",
+      "acc_01": "0.49695999999999996",
+      "drop_at_01": "0.00653999999999999"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4818",
+      "acc_01": "0.48052",
+      "drop_at_01": "0.0012800000000000034"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4656",
+      "acc_01": "0.4655",
+      "drop_at_01": "9.999999999998899e-05"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4744",
+      "acc_01": "0.47309999999999997",
+      "drop_at_01": "0.0013000000000000234"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4747",
+      "acc_01": "0.473",
+      "drop_at_01": "0.0017000000000000348"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4824",
+      "acc_01": "0.48228",
+      "drop_at_01": "0.00012000000000000899"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5035",
+      "acc_01": "0.4984",
+      "drop_at_01": "0.005099999999999938"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4818",
+      "acc_01": "0.48026",
+      "drop_at_01": "0.0015399999999999858"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4656",
+      "acc_01": "0.46576000000000006",
+      "drop_at_01": "-0.000160000000000049"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4744",
+      "acc_01": "0.47182",
+      "drop_at_01": "0.002579999999999971"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4747",
+      "acc_01": "0.47388",
+      "drop_at_01": "0.0008199999999999874"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5039",
+      "acc_01": "0.50274",
+      "drop_at_01": "0.0011600000000000499"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5013",
+      "acc_01": "0.49985999999999997",
+      "drop_at_01": "0.0014399999999999968"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.504",
+      "acc_01": "0.50378",
+      "drop_at_01": "0.00021999999999999797"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4976",
+      "acc_01": "0.49546",
+      "drop_at_01": "0.0021399999999999753"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4825",
+      "acc_01": "0.48125999999999997",
+      "drop_at_01": "0.0012400000000000189"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4923",
+      "acc_01": "0.49218",
+      "drop_at_01": "0.00012000000000000899"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5057",
+      "acc_01": "0.50466",
+      "drop_at_01": "0.001040000000000041"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5149",
+      "acc_01": "0.51472",
+      "drop_at_01": "0.000180000000000069"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5147",
+      "acc_01": "0.5135",
+      "drop_at_01": "0.0012000000000000899"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4919",
+      "acc_01": "0.49234",
+      "drop_at_01": "-0.00043999999999999595"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.4887",
+      "acc_01": "0.48876",
+      "drop_at_01": "-5.999999999994898e-05"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.496",
+      "acc_01": "0.49604",
+      "drop_at_01": "-3.999999999998449e-05"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.6777",
+      "acc_01": "0.64822",
+      "drop_at_01": "0.02947999999999995"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.6627",
+      "acc_01": "0.63562",
+      "drop_at_01": "0.027079999999999993"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.683",
+      "acc_01": "0.6519",
+      "drop_at_01": "0.031100000000000017"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.6011",
+      "acc_01": "0.59914",
+      "drop_at_01": "0.0019599999999999618"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.6086",
+      "acc_01": "0.6074200000000001",
+      "drop_at_01": "0.0011799999999999589"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": "0.5997",
+      "acc_01": "0.5967",
+      "drop_at_01": "0.0030000000000000027"
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": 0.7055,
+      "acc_01": 0.66632,
+      "drop_at_01": 0.03917999999999999
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": 0.71,
+      "acc_01": 0.70088,
+      "drop_at_01": 0.009120000000000017
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": 0.7031,
+      "acc_01": 0.67872,
+      "drop_at_01": 0.024379999999999957
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": 0.721,
+      "acc_01": 0.71742,
+      "drop_at_01": 0.0035800000000000276
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": 0.7189,
+      "acc_01": 0.71594,
+      "drop_at_01": 0.0029599999999999627
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "acc_0": 0.675,
+      "acc_01": 0.6706000000000001,
+      "drop_at_01": 0.0043999999999999595
+    }
+  ],
+  "sweep": [
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4824",
+      "loss": "1.4443333477020264"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.4824",
+      "loss": "1.4444418711090088"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.4838",
+      "loss": "1.443048126487732"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.48319999999999996",
+      "loss": "1.446240008659363"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.48208",
+      "loss": "1.4507763218307494"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.48188",
+      "loss": "1.452623225440979"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5035",
+      "loss": "1.4096877487182617"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.50316",
+      "loss": "1.4101542960739137"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.5031800000000001",
+      "loss": "1.4097348274612427"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.50148",
+      "loss": "1.4112416204833984"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.49695999999999996",
+      "loss": "1.4169684321212768"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.48762",
+      "loss": "1.4460425745391845"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4818",
+      "loss": "1.4458123727798462"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.48202",
+      "loss": "1.4457309849548339"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.48216000000000003",
+      "loss": "1.4457214379119872"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.48136",
+      "loss": "1.4473056421279906"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.48052",
+      "loss": "1.4505448901367188"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.47096",
+      "loss": "1.4719956541442871"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4656",
+      "loss": "1.496235418701172"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.46593999999999997",
+      "loss": "1.4963565698623658"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.46647999999999995",
+      "loss": "1.4958813677978515"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.46658",
+      "loss": "1.4956797606658936"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.4655",
+      "loss": "1.4995743397140502"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.46042000000000005",
+      "loss": "1.5065014990234373"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4744",
+      "loss": "1.4705225130081176"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.47412",
+      "loss": "1.4704259700393678"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.4744",
+      "loss": "1.4706525844955445"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.47356",
+      "loss": "1.471647073173523"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.47309999999999997",
+      "loss": "1.4722126163864135"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.47012",
+      "loss": "1.479778995475769"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4747",
+      "loss": "1.4746097673416139"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.47504",
+      "loss": "1.474485965270996"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.47506000000000004",
+      "loss": "1.4747321195983887"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.47436",
+      "loss": "1.4750882878875733"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.473",
+      "loss": "1.4765139087295531"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.47379999999999994",
+      "loss": "1.479679722557068"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4824",
+      "loss": "1.4443333477020264"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.48292",
+      "loss": "1.444095765914917"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.48292",
+      "loss": "1.4441216852951049"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.48145999999999994",
+      "loss": "1.4470660641860964"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.48228",
+      "loss": "1.4510907516479492"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.4774",
+      "loss": "1.4653442923736573"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5035",
+      "loss": "1.4096877487182617"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.5035000000000001",
+      "loss": "1.4100028997802734"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.5024599999999999",
+      "loss": "1.4107880103302002"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.4984",
+      "loss": "1.4129079729461669"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.4984",
+      "loss": "1.4141306079101563"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.4857",
+      "loss": "1.4465988019561768"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4818",
+      "loss": "1.4458123727798462"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.48216000000000003",
+      "loss": "1.446368949508667"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.48202",
+      "loss": "1.4448046642303467"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.48125999999999997",
+      "loss": "1.4478948888397216"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.48026",
+      "loss": "1.4519220399093626"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.47598",
+      "loss": "1.4617577430725097"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4656",
+      "loss": "1.496235418701172"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.466",
+      "loss": "1.4961558304595948"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.466",
+      "loss": "1.496637190055847"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.46714",
+      "loss": "1.4963128495788574"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.46576000000000006",
+      "loss": "1.4982211736297608"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.46514",
+      "loss": "1.501449654159546"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4744",
+      "loss": "1.4705225130081176"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.4742",
+      "loss": "1.4705626615142822"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.47444",
+      "loss": "1.4703045779418944"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.47316",
+      "loss": "1.4719487704467773"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.47182",
+      "loss": "1.4734844068527222"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.4685",
+      "loss": "1.4822054023742675"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4747",
+      "loss": "1.4746097673416139"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.47444",
+      "loss": "1.474823179740906"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.47456000000000004",
+      "loss": "1.4744985806655884"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.47428",
+      "loss": "1.4750100521850587"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.47388",
+      "loss": "1.4762683515930175"
+    },
+    {
+      "architecture": "mlp_small",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.4711",
+      "loss": "1.4818395827102662"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5039",
+      "loss": "1.3860213151931762"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.5043599999999999",
+      "loss": "1.3860107677459717"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.5038600000000001",
+      "loss": "1.3861299479293823"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.50376",
+      "loss": "1.3869250050354005"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.50274",
+      "loss": "1.3890939404678346"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.49901999999999996",
+      "loss": "1.3968392118835449"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5013",
+      "loss": "1.402734460258484"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.50196",
+      "loss": "1.402381428413391"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.50176",
+      "loss": "1.4035355776977538"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.5021000000000001",
+      "loss": "1.4025698136901856"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.49985999999999997",
+      "loss": "1.4103612559509278"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.49752",
+      "loss": "1.4175473274993897"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.504",
+      "loss": "1.3900575960159303"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.5043200000000001",
+      "loss": "1.3902202186965942"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.50424",
+      "loss": "1.3905208512496947"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.50454",
+      "loss": "1.3914310195159911"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.50378",
+      "loss": "1.3922913479995729"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.5022800000000001",
+      "loss": "1.399488676185608"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4976",
+      "loss": "1.4403785146713257"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.49756",
+      "loss": "1.4403837285232544"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.49792",
+      "loss": "1.440077776298523"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.49654",
+      "loss": "1.4409002534866333"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.49546",
+      "loss": "1.443229765701294"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.49420000000000003",
+      "loss": "1.4457877688217162"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4825",
+      "loss": "1.4494446619033814"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.48238000000000003",
+      "loss": "1.4493724368286134"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.48254",
+      "loss": "1.4495044324111939"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.48206",
+      "loss": "1.4497641283035279"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.48125999999999997",
+      "loss": "1.4523351653289795"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.48062000000000005",
+      "loss": "1.4563263649368285"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4923",
+      "loss": "1.4267114128112792"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.49228000000000005",
+      "loss": "1.4268062935256958"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.49193999999999993",
+      "loss": "1.4269028354263305"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.491",
+      "loss": "1.4274988311386108"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.49218",
+      "loss": "1.4276428472137452"
+    },
+    {
+      "architecture": "mlp_medium",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.48856",
+      "loss": "1.434049320487976"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5057",
+      "loss": "1.3954126848220825"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.50532",
+      "loss": "1.3954088767242432"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.50556",
+      "loss": "1.395321236114502"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.50564",
+      "loss": "1.39554042263031"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.50466",
+      "loss": "1.395462418861389"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.5013",
+      "loss": "1.403795221977234"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5149",
+      "loss": "1.3730333881378174"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.51496",
+      "loss": "1.373113197746277"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.515",
+      "loss": "1.3728400619506835"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.51434",
+      "loss": "1.37453766582489"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.51472",
+      "loss": "1.3764337063217162"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.50968",
+      "loss": "1.381622229423523"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5147",
+      "loss": "1.374800345993042"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.51454",
+      "loss": "1.3750091641616822"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.51454",
+      "loss": "1.375120613670349"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.5145",
+      "loss": "1.374084966087341"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.5135",
+      "loss": "1.3755406963729857"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.50838",
+      "loss": "1.3842741216278076"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4919",
+      "loss": "1.4384306667327882"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.49227999999999994",
+      "loss": "1.438418196029663"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.49252",
+      "loss": "1.4381332331848145"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.49256",
+      "loss": "1.4386036100387574"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.49234",
+      "loss": "1.4389320598602295"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.48904",
+      "loss": "1.4433165168380737"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.4887",
+      "loss": "1.4344467470169067"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.48852",
+      "loss": "1.4344363719558717"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.48864",
+      "loss": "1.434438319015503"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.48958",
+      "loss": "1.435081477279663"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.48876",
+      "loss": "1.4362888164520264"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.48794000000000004",
+      "loss": "1.4410852388000488"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.496",
+      "loss": "1.4225113586425782"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.4957",
+      "loss": "1.422542922706604"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.49598",
+      "loss": "1.422427358856201"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.49616",
+      "loss": "1.4230445500183104"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.49604",
+      "loss": "1.4223327999114992"
+    },
+    {
+      "architecture": "mlp_large",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.49560000000000004",
+      "loss": "1.4227923426437379"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.6777",
+      "loss": "0.9256742736816407"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.6781200000000001",
+      "loss": "0.9249680311203002"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.67766",
+      "loss": "0.9277996481132508"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.67164",
+      "loss": "0.9471387108230591"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.64822",
+      "loss": "1.0164882137680054"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.56942",
+      "loss": "1.264513189792633"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.6627",
+      "loss": "0.9662513690948487"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.6622399999999999",
+      "loss": "0.9650782694625855"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.6612199999999999",
+      "loss": "0.9711516223526001"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.65838",
+      "loss": "0.9785681935310364"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.63562",
+      "loss": "1.0464268027496337"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.52466",
+      "loss": "1.513297614440918"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.683",
+      "loss": "0.912676784324646"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.6824",
+      "loss": "0.9122612117195128"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.6824",
+      "loss": "0.9135274201965332"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.67266",
+      "loss": "0.9425088118743897"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.6519",
+      "loss": "1.0005041736984253"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "clean",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.50152",
+      "loss": "1.554645297756195"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.6011",
+      "loss": "1.1278443641662597"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.60152",
+      "loss": "1.1277954901885987"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.6015400000000001",
+      "loss": "1.1278158973312378"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.6013",
+      "loss": "1.1273498413467409"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.59914",
+      "loss": "1.1332306821823122"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "0",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.59222",
+      "loss": "1.1556388241767883"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.6086",
+      "loss": "1.1171610813140869"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.60878",
+      "loss": "1.117247548904419"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.6088",
+      "loss": "1.1177726057815551"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.60774",
+      "loss": "1.118503869667053"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.6074200000000001",
+      "loss": "1.1221801373291016"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "1",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.6026999999999999",
+      "loss": "1.1383463719177247"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.0",
+      "acc": "0.5997",
+      "loss": "1.1415079246520996"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.01",
+      "acc": "0.59984",
+      "loss": "1.1413293827819824"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.02",
+      "acc": "0.59948",
+      "loss": "1.142092957420349"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.05",
+      "acc": "0.59896",
+      "loss": "1.1438738761901857"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.1",
+      "acc": "0.5967",
+      "loss": "1.1476422582626342"
+    },
+    {
+      "architecture": "cnn",
+      "regime": "noisy",
+      "seed": "2",
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": "0.2",
+      "acc": "0.58786",
+      "loss": "1.1697434511756897"
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.0,
+      "acc": 0.7055,
+      "loss": 1.0791691591262818
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.01,
+      "acc": 0.7051999999999999,
+      "loss": 1.080948120880127
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.02,
+      "acc": 0.70436,
+      "loss": 1.079754827003479
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.05,
+      "acc": 0.6970599999999999,
+      "loss": 1.1135243410682678
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.1,
+      "acc": 0.66632,
+      "loss": 1.2519253161621093
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.2,
+      "acc": 0.6502,
+      "loss": 1.2921155278778076
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.0,
+      "acc": 0.71,
+      "loss": 1.0593070495605468
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.01,
+      "acc": 0.7094,
+      "loss": 1.0627130610656739
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.02,
+      "acc": 0.7076399999999999,
+      "loss": 1.07267113697052
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.05,
+      "acc": 0.70434,
+      "loss": 1.0754944202804566
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.1,
+      "acc": 0.70088,
+      "loss": 1.0859706312561035
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.2,
+      "acc": 0.62706,
+      "loss": 1.4392798824691773
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.0,
+      "acc": 0.7031,
+      "loss": 1.085535922050476
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.01,
+      "acc": 0.70324,
+      "loss": 1.083615410003662
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.02,
+      "acc": 0.7058,
+      "loss": 1.0683491124725344
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.05,
+      "acc": 0.69926,
+      "loss": 1.0955631454658508
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.1,
+      "acc": 0.67872,
+      "loss": 1.21403295129776
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "clean",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.2,
+      "acc": 0.65626,
+      "loss": 1.3077966200637818
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.0,
+      "acc": 0.721,
+      "loss": 0.814967507648468
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.01,
+      "acc": 0.7205600000000001,
+      "loss": 0.8157589775657653
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.02,
+      "acc": 0.7207800000000001,
+      "loss": 0.8159680258750915
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.05,
+      "acc": 0.71912,
+      "loss": 0.8212092060089111
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.1,
+      "acc": 0.71742,
+      "loss": 0.8309538256072997
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 0,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.2,
+      "acc": 0.69686,
+      "loss": 0.8934995248126985
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.0,
+      "acc": 0.7189,
+      "loss": 0.8356435811042786
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.01,
+      "acc": 0.7195400000000001,
+      "loss": 0.8351036983299256
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.02,
+      "acc": 0.7202200000000001,
+      "loss": 0.8347850834846497
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.05,
+      "acc": 0.7191,
+      "loss": 0.8383394267654418
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.1,
+      "acc": 0.71594,
+      "loss": 0.8476328379058838
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 1,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.2,
+      "acc": 0.7114,
+      "loss": 0.8568539581298829
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.0,
+      "acc": 0.675,
+      "loss": 1.000218588066101
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.01,
+      "acc": 0.67518,
+      "loss": 0.9986314303779602
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.02,
+      "acc": 0.67332,
+      "loss": 1.0055393687057497
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.05,
+      "acc": 0.67318,
+      "loss": 1.000404889125824
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.1,
+      "acc": 0.6706000000000001,
+      "loss": 1.0100949625968934
+    },
+    {
+      "architecture": "resnet18",
+      "regime": "noisy",
+      "seed": 2,
+      "dataset": "cifar10",
+      "alpha_train": 0.5,
+      "alpha_test": 0.2,
+      "acc": 0.6372,
+      "loss": 1.1344358356666564
+    }
+  ]
+}

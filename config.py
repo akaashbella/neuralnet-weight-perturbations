@@ -9,7 +9,8 @@ import torch
 SEEDS = [0, 1, 2]
 
 # Training-time weight noise strength (noisy regime only)
-ALPHA_TRAIN = 0.05
+# ALPHA_TRAIN = 0.05
+ALPHA_TRAIN = 0.5
 
 # Evaluation-time perturbation strengths for robustness sweep
 ALPHA_TEST_LIST = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2]
