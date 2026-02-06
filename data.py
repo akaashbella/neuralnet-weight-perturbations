@@ -1,6 +1,6 @@
 """
-MNIST and CIFAR-10 data loading. MNIST uses 1->3 channel for ResNet/ViT.
-Both datasets: 10 classes; images resized to 28×28 base (or 224 for ViT/MobileNetV2).
+MNIST and CIFAR-10 data loading. MNIST uses 1->3 channel for ResNet compatibility.
+Both datasets: 10 classes; images resized to 28×28 by default (optional resize for other sizes).
 """
 
 from torch.utils.data import DataLoader
@@ -14,14 +14,14 @@ DATASET_CHOICES = ("mnist", "cifar10")
 
 
 def _to_three_channel(x):
-    """Repeat single channel to 3 channels so ResNet/ViT accept MNIST (1,28,28) -> (3,28,28)."""
+    """Repeat single channel to 3 channels so ResNet accepts MNIST (1,28,28) -> (3,28,28)."""
     return x.repeat(3, 1, 1)
 
 
 def get_mnist_transform(resize=None):
     """
     Transform: ToTensor, then 1->3 channel. No normalization (0–1 range).
-    If resize is given (e.g. 224 for ViT), add Resize so model sees fixed size.
+    If resize is given, add Resize so model sees that size (e.g. 224 for ImageNet-sized models).
     """
     steps = [
         transforms.ToTensor(),
@@ -34,7 +34,7 @@ def get_mnist_transform(resize=None):
 
 def get_cifar10_transform(resize=None):
     """
-    Transform: ToTensor only (CIFAR-10 is 32×32 RGB). Resize to 28×28 base for model compatibility, then optional 224.
+    Transform: ToTensor only (CIFAR-10 is 32×32 RGB). Resize to 28×28 base for model compatibility; optional further resize if given.
     No normalization (0–1 range).
     """
     steps = [transforms.ToTensor()]
@@ -48,7 +48,7 @@ def get_cifar10_transform(resize=None):
 def get_mnist_loaders(batch_size=None, data_dir=None, num_workers=0, resize=None):
     """
     Build train and test DataLoaders for MNIST.
-    resize: if set (e.g. 224 for ViT), images are resized in the transform.
+    resize: if set, images are resized in the transform (e.g. 224 for larger input).
     """
     batch_size = batch_size or config.BATCH_SIZE
     data_dir = data_dir or config.DATA_DIR
@@ -85,7 +85,7 @@ def get_mnist_loaders(batch_size=None, data_dir=None, num_workers=0, resize=None
 def get_cifar10_loaders(batch_size=None, data_dir=None, num_workers=0, resize=None):
     """
     Build train and test DataLoaders for CIFAR-10.
-    Images resized to 28×28 by default (model compatibility); use resize=224 for ViT/MobileNetV2.
+    Images resized to 28×28 by default (model compatibility); optional resize for other input sizes.
     """
     batch_size = batch_size or config.BATCH_SIZE
     data_dir = data_dir or config.DATA_DIR
@@ -123,7 +123,7 @@ def get_loaders(dataset, batch_size=None, data_dir=None, num_workers=0, resize=N
     """
     Build train and test DataLoaders for the given dataset.
     dataset: "mnist" or "cifar10"
-    resize: if set (e.g. 224), images are resized for ViT/MobileNetV2.
+    resize: if set, images are resized to that size (e.g. 224 for larger models).
     """
     if dataset == "mnist":
         return get_mnist_loaders(batch_size=batch_size, data_dir=data_dir, num_workers=num_workers, resize=resize)

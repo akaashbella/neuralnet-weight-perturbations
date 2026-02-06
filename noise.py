@@ -16,7 +16,7 @@ def get_weight_only_params(model):
     """
     Return list of weight tensors that should receive noise.
     Guarantees: biases excluded; BatchNorm/LayerNorm params excluded; all other
-    weights included (Linear, Conv2d, ViT attention projections, etc.).
+    weights included (Linear, Conv2d, attention projections, etc.).
     Uses the owning module (get_submodule) so nesting and naming are robust.
     """
     weight_params = []

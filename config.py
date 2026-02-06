@@ -9,11 +9,10 @@ import torch
 SEEDS = [0, 1, 2]
 
 # Training-time weight noise strength (noisy regime only)
-# ALPHA_TRAIN = 0.05
-ALPHA_TRAIN = 0.5
+ALPHA_TRAIN = 0.05
 
 # Evaluation-time perturbation strengths for robustness sweep
-ALPHA_TEST_LIST = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2]
+ALPHA_TEST_LIST = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5]
 # Number of noise samples per α_test to average over (reduces variance; 1 = single draw)
 ROBUSTNESS_NUM_SAMPLES = 5
 
@@ -26,7 +25,7 @@ LEARNING_RATE = 1e-3
 DATA_DIR = "./data"
 CHECKPOINT_DIR = "./checkpoints"
 RESULTS_DIR = "./results"
-MNIST_IMAGE_SIZE = 28  # MNIST is 28x28; ViT/ResNet may need resize in model or transform
+MNIST_IMAGE_SIZE = 28  # MNIST is 28x28; resize in transform if needed for an architecture
 
 # Device
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"  # set to "cpu" if no GPU

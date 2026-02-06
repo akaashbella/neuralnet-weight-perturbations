@@ -1,8 +1,7 @@
 """
-Seven architectures: MLP (3 variants), Simple CNN, ResNet-18, ViT, MobileNetV2.
-All accept 3-channel MNIST (B, 3, 28, 28) and output 10-class logits.
+Five architectures: MLP (3 variants), Simple CNN, ResNet-18.
+All accept 3-channel input (B, 3, 28, 28) and output 10-class logits.
 MLP variants: mlp_small, mlp_medium, mlp_large (differ by hidden dims).
-ViT and MobileNetV2 expect 224×224 input; use get_mnist_loaders(resize=224) for those.
 """
 
 import torch
@@ -76,26 +75,6 @@ def get_resnet18(num_classes=10):
     return model
 
 
-# --- MobileNetV2: torchvision; expects 224×224 input (use get_mnist_loaders(resize=224)) ---
-
-def get_mobilenet_v2(num_classes=10):
-    """MobileNetV2 with 10-class head. Expects 224×224 input; use get_mnist_loaders(resize=224)."""
-    return models.mobilenet_v2(weights=None, num_classes=num_classes)
-
-
-# --- ViT: torchvision vit_b_16 (smallest); expects 224×224 input (use get_mnist_loaders(resize=224)) ---
-
-class ViTForMNIST(nn.Module):
-    """Torchvision ViT with 10-class head. Expects 224×224 input; use get_mnist_loaders(resize=224) for ViT."""
-
-    def __init__(self, num_classes=10):
-        super().__init__()
-        self.vit = models.vit_b_16(weights=None, num_classes=num_classes)
-
-    def forward(self, x):
-        return self.vit(x)
-
-
 # --- Factory: single entry point for training/eval so arch names stay consistent ---
 
 def get_model(name, num_classes=10):
@@ -110,21 +89,16 @@ def get_model(name, num_classes=10):
         return SimpleCNN(num_classes=num_classes)
     if name == "resnet18":
         return get_resnet18(num_classes=num_classes)
-    if name == "mobilenetv2":
-        return get_mobilenet_v2(num_classes=num_classes)
-    if name == "vit":
-        return ViTForMNIST(num_classes=num_classes)
     raise ValueError(f"Unknown architecture: {name}")
 
 
-ARCH_NAMES = ["mlp_small", "mlp_medium", "mlp_large", "cnn", "resnet18", "mobilenetv2", "vit"]
+ARCH_NAMES = ["mlp_small", "mlp_medium", "mlp_large", "cnn", "resnet18"]
 
 
 if __name__ == "__main__":
     # Sanity check: each model accepts correct input size and returns (2, 10)
-    resize_archs = ("vit", "mobilenetv2")
     for name in ARCH_NAMES:
-        x = torch.randn(2, 3, 224, 224) if name in resize_archs else torch.randn(2, 3, 28, 28)
+        x = torch.randn(2, 3, 28, 28)
         model = get_model(name)
         model.eval()
         with torch.no_grad():

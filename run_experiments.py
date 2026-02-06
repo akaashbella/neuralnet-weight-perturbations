@@ -1,7 +1,7 @@
 """
-Phase 6–7: Train models, run robustness sweep, log results, save to CSV/JSON.
+Train models, run robustness sweep, log results, save to CSV/JSON.
 Checkpoints under config.CHECKPOINT_DIR; results under config.RESULTS_DIR.
-Run all architectures (default) or only selected ones: python run_experiments.py [mlp_small] [mlp_medium] [mlp_large] [cnn] [resnet18] [mobilenetv2] [vit]
+Run all architectures (default) or only selected ones: python run_experiments.py [mlp_small] [mlp_medium] [mlp_large] [cnn] [resnet18]
 """
 
 import argparse
@@ -22,11 +22,6 @@ def checkpoint_path(arch, regime, seed, alpha_train=None, base_dir=None):
         alpha_train = config.ALPHA_TRAIN
     base_dir = base_dir or config.CHECKPOINT_DIR
     return os.path.join(base_dir, f"{arch}_{regime}_seed{seed}_a{alpha_train:.2f}.pt")
-
-
-# ViT and MobileNetV2 expect 224×224; use loaders with resize for these archs.
-RESIZE_INPUT_SIZE = 224
-RESIZE_ARCHS = ("vit", "mobilenetv2")
 
 
 def run_all(dataset="mnist", architectures=None):
@@ -52,8 +47,6 @@ def run_all(dataset="mnist", architectures=None):
     print(f"Alpha (train): {alpha_train}")
     print(f"Architectures: {archs}")
     train_loader, test_loader = get_loaders(dataset)
-    need_resize = any(a in RESIZE_ARCHS for a in archs)
-    train_loader_resize, test_loader_resize = (get_loaders(dataset, resize=RESIZE_INPUT_SIZE) if need_resize else (None, None))
 
     # Train (skip if checkpoint already exists)
     for seed in config.SEEDS:
@@ -63,9 +56,8 @@ def run_all(dataset="mnist", architectures=None):
                 if os.path.isfile(path):
                     print(f"skip training {arch} {regime} seed={seed}")
                     continue
-                tr_loader = train_loader_resize if arch in RESIZE_ARCHS and train_loader_resize is not None else train_loader
                 print(f"\n--- train {arch} {regime} seed={seed} -> {path}")
-                train_one(arch, tr_loader, noisy=noisy, seed=seed, device=device, save_path=path)
+                train_one(arch, train_loader, noisy=noisy, seed=seed, device=device, save_path=path)
 
     # Robustness sweep only for architectures we ran; collect results
     print("\n" + "=" * 60 + "\nRobustness evaluation\n")
@@ -81,8 +73,7 @@ def run_all(dataset="mnist", architectures=None):
                 if not os.path.isfile(path):
                     print(f"skip {arch} {regime} seed={seed} (no checkpoint)")
                     continue
-                te_loader = test_loader_resize if arch in RESIZE_ARCHS and test_loader_resize is not None else test_loader
-                _, sweep = load_and_sweep(arch, path, te_loader, device)
+                _, sweep = load_and_sweep(arch, path, test_loader, device)
                 drop = accuracy_drop_at_01(sweep)
                 acc0 = next(r["acc"] for r in sweep if r["alpha"] == 0.0)
                 acc01 = next(r["acc"] for r in sweep if r["alpha"] == 0.1)
