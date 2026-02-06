@@ -4,8 +4,8 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 
 ## Features
 
-- **Dataset:** CIFAR-10 (32×32 RGB, 10 classes; optional resize per architecture).
-- **Architectures:** 5 models — MLP (small / medium / large), Simple CNN, ResNet-18. All use 32×32 input.
+- **Dataset:** CIFAR-10 (32×32 RGB, 10 classes; optional resize per architecture). Standard channel-wise normalization; training uses random crop (padding=4) + horizontal flip.
+- **Architectures:** 5 models — MLP (small / medium / large), Simple CNN, ResNet-18. All use 32×32 input. ResNet-18 uses a CIFAR-optimized stem (3×3 stride 1, no maxpool).
 - **Training:** Clean regime (standard training) or noisy regime (per-batch Gaussian weight noise before forward/backward; optimizer updates clean weights).
 - **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1 as main metric. Results merged into dataset-specific CSVs and JSON.
 
@@ -80,10 +80,10 @@ Single place for seeds, noise strengths, and training/eval settings.
 | Variable | Meaning | Default |
 |----------|---------|--------|
 | `SEEDS` | Random seeds (one model per seed × regime × arch) | `[0, 1, 2]` |
-| `ALPHA_TRAIN` | Training-time weight noise (noisy regime only) | `0.2` |
-| `ALPHA_TEST_LIST` | Evaluation perturbation strengths | `[0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5]` |
+| `ALPHA_TRAIN` | Training-time weight noise (noisy regime only) | `0.05` |
+| `ALPHA_TEST_LIST` | Evaluation perturbation strengths (0.5 can saturate to near-random; useful as “break” point) | `[0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5]` |
 | `ROBUSTNESS_NUM_SAMPLES` | Noise samples per α_test for averaging | `5` |
-| `EPOCHS` | Training epochs (all architectures) | `10` |
+| `EPOCHS` | Training epochs (all architectures) | `40` |
 | `BATCH_SIZE` | Training/eval batch size | `128` |
 | `LEARNING_RATE` | Adam learning rate | `1e-3` |
 | `DATA_DIR` | Dataset root | `./data` |
@@ -91,17 +91,21 @@ Single place for seeds, noise strengths, and training/eval settings.
 | `RESULTS_DIR` | Results root (per-dataset subdirs) | `./results` |
 | `DEVICE` | `"cuda"` if available, else `"cpu"` | auto |
 
+Reproducibility: `set_seed()` (in `train.py`) sets PyTorch and CUDA seeds and uses `cudnn.deterministic=True`, `cudnn.benchmark=False` for tighter GPU reproducibility.
+
 Change these and re-run; checkpoint filenames include `alpha_train` so different noise levels do not overwrite.
 
-### Dataset
+### Dataset and data recipe
 
 - **Supported:** CIFAR-10 only (see `data.DATASET_CHOICES`). Images are 32×32 RGB; optional `resize` in `get_loaders()` for architectures that need a different input size.
+- **Transforms:** Train = RandomCrop(32, padding=4) + RandomHorizontalFlip + ToTensor + Normalize(CIFAR10_MEAN, CIFAR10_STD). Test = ToTensor + Normalize. If `resize` is set (e.g. for larger backbones), Resize is applied first, and RandomCrop uses that size. This standard recipe improves CNN/ResNet baselines and makes robustness comparisons defensible; MLPs work fine with normalized inputs.
 
 ### Neural architectures
 
 - **Defined in:** `models.py`.
 - **Factory:** `get_model(name, num_classes=10)`.
 - **Names:** `ARCH_NAMES = ["mlp_small", "mlp_medium", "mlp_large", "cnn", "resnet18"]`.
+- **ResNet-18:** Uses a CIFAR-optimized stem (first conv 3×3 stride 1, no maxpool) so 32×32 input is handled well; baseline accuracy and noise sensitivity are more comparable to other CIFAR setups.
 
 To **add an architecture:**
 

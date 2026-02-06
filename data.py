@@ -1,5 +1,6 @@
 """
 CIFAR-10 data loading. 32×32 RGB, 10 classes; optional resize for other input sizes.
+Uses standard CIFAR-10 normalization and (for training) basic augmentation.
 """
 
 from torch.utils.data import DataLoader
@@ -11,38 +12,58 @@ import config
 
 DATASET_CHOICES = ("cifar10",)
 
+# Standard CIFAR-10 channel-wise mean and std (used for normalization)
+CIFAR10_MEAN = (0.4914, 0.4822, 0.4465)
+CIFAR10_STD = (0.2470, 0.2435, 0.2616)
 
-def get_cifar10_transform(resize=None):
+
+def get_cifar10_transform(train=True, resize=None):
     """
-    Transform: ToTensor only (CIFAR-10 is 32×32 RGB). No normalization (0–1 range).
-    If resize is given, add Resize so model sees that size (e.g. 224 for ImageNet-sized models).
+    Resize (if given) is applied first (before ToTensor/Normalize).
+    Train: [Resize] + RandomCrop(crop_size, padding=4) + RandomHorizontalFlip + ToTensor + Normalize.
+    Test: [Resize] + ToTensor + Normalize.
+    crop_size is 32 when resize is None, else resize (so we don't crop to 32 when target is e.g. 224).
     """
-    steps = [transforms.ToTensor()]
+    steps = []
     if resize is not None:
         steps.append(transforms.Resize((resize, resize)))
+
+    if train:
+        crop_size = resize if resize is not None else 32
+        steps += [
+            transforms.RandomCrop(crop_size, padding=4),
+            transforms.RandomHorizontalFlip(),
+        ]
+
+    steps += [
+        transforms.ToTensor(),
+        transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD),
+    ]
     return transforms.Compose(steps)
 
 
 def get_cifar10_loaders(batch_size=None, data_dir=None, num_workers=0, resize=None):
     """
     Build train and test DataLoaders for CIFAR-10.
+    Train uses augmentation (random crop + flip) and normalization; test uses normalization only.
     Images are 32×32 by default; optional resize for other input sizes.
     """
     batch_size = batch_size or config.BATCH_SIZE
     data_dir = data_dir or config.DATA_DIR
-    transform = get_cifar10_transform(resize=resize)
+    train_transform = get_cifar10_transform(train=True, resize=resize)
+    test_transform = get_cifar10_transform(train=False, resize=resize)
 
     train_dataset = datasets.CIFAR10(
         root=data_dir,
         train=True,
         download=True,
-        transform=transform,
+        transform=train_transform,
     )
     test_dataset = datasets.CIFAR10(
         root=data_dir,
         train=False,
         download=True,
-        transform=transform,
+        transform=test_transform,
     )
 
     train_loader = DataLoader(

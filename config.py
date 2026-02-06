@@ -12,12 +12,12 @@ SEEDS = [0, 1, 2]
 ALPHA_TRAIN = 0.05
 
 # Evaluation-time perturbation strengths for robustness sweep
-ALPHA_TEST_LIST = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5]
+ALPHA_TEST_LIST = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2]
 # Number of noise samples per α_test to average over (reduces variance; 1 = single draw)
 ROBUSTNESS_NUM_SAMPLES = 5
 
 # Training recipe (same for all architectures)
-EPOCHS = 10
+EPOCHS = 40
 BATCH_SIZE = 128
 LEARNING_RATE = 1e-3
 

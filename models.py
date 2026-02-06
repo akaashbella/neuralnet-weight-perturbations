@@ -66,11 +66,18 @@ class SimpleCNN(nn.Module):
         return self.classifier(x)
 
 
-# --- ResNet-18: torchvision, 3-channel OK; replace final FC for 10 classes ---
+# --- ResNet-18: CIFAR-optimized stem (3×3 stride 1, no maxpool) + final FC for 10 classes ---
 
 def get_resnet18(num_classes=10):
-    """ResNet-18 with first conv 3-channel (default) and final FC output num_classes."""
+    """
+    ResNet-18 with CIFAR-style stem: 3×3 conv stride 1, no maxpool.
+    Better suited to 32×32 input than the default ImageNet stem (7×7 stride 2 + maxpool).
+    Final FC output num_classes.
+    """
     model = models.resnet18(weights=None)
+    # CIFAR stem: 3×3 stride 1 instead of 7×7 stride 2; no maxpool
+    model.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+    model.maxpool = nn.Identity()
     model.fc = nn.Linear(model.fc.in_features, num_classes)
     return model
 
