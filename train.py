@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 import config
-from data import get_mnist_loaders
+from data import get_loaders
 from models import get_model
 from noise import apply_weight_noise, remove_weight_noise
 
@@ -64,8 +64,8 @@ def train_one(arch_name, train_loader, noisy, seed, device, save_path=None, epoc
 if __name__ == "__main__":
     # Quick sanity run: 1 epoch, MLP, clean then noisy
     device = config.DEVICE
-    train_loader, _ = get_mnist_loaders()
-    print("train_one(mlp, clean, seed=0)")
-    train_one("mlp", train_loader, noisy=False, seed=0, device=device, save_path="checkpoint_mlp_clean.pt", epochs=1)
-    print("train_one(mlp, noisy, seed=0)")
-    train_one("mlp", train_loader, noisy=True, seed=0, device=device, save_path="checkpoint_mlp_noisy.pt", epochs=1)
+    train_loader, _ = get_loaders("cifar10")
+    print("train_one(mlp_small, clean, seed=0)")
+    train_one("mlp_small", train_loader, noisy=False, seed=0, device=device, save_path="checkpoint_mlp_clean.pt", epochs=1)
+    print("train_one(mlp_small, noisy, seed=0)")
+    train_one("mlp_small", train_loader, noisy=True, seed=0, device=device, save_path="checkpoint_mlp_noisy.pt", epochs=1)

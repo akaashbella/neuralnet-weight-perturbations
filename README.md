@@ -4,8 +4,8 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 
 ## Features
 
-- **Datasets:** MNIST and CIFAR-10 (10 classes; images resized as needed per architecture).
-- **Architectures:** 5 models — MLP (small / medium / large), Simple CNN, ResNet-18. All use 28×28 input.
+- **Dataset:** CIFAR-10 (32×32 RGB, 10 classes; optional resize per architecture).
+- **Architectures:** 5 models — MLP (small / medium / large), Simple CNN, ResNet-18. All use 32×32 input.
 - **Training:** Clean regime (standard training) or noisy regime (per-batch Gaussian weight noise before forward/backward; optimizer updates clean weights).
 - **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1 as main metric. Results merged into dataset-specific CSVs and JSON.
 
@@ -23,37 +23,30 @@ Requires: `torch>=2.0.0`, `torchvision>=0.15.0`. Data is downloaded under `./dat
 
 ### Full experiment (all architectures, one dataset)
 
-Trains every architecture in both regimes over 3 seeds, then runs the robustness sweep and writes results. Checkpoints and results are **per-dataset** (e.g. `checkpoints/mnist/`, `results/mnist/`).
+Trains every architecture in both regimes over 3 seeds, then runs the robustness sweep and writes results. Checkpoints and results are under `checkpoints/cifar10/` and `results/cifar10/`.
 
 ```bash
-# Default: MNIST, all 5 architectures (5 × 2 regimes × 3 seeds = 30 models)
+# Default: CIFAR-10, all 5 architectures (5 × 2 regimes × 3 seeds = 30 models)
 python run_experiments.py
-
-# CIFAR-10, all architectures
-python run_experiments.py --dataset cifar10
 ```
 
-- **Checkpoints:** `checkpoints/<dataset>/{arch}_{regime}_seed{seed}_a{alpha_train}.pt`
-- **Results:** `results/<dataset>/summary.csv`, `results/<dataset>/sweep.csv`, `results/<dataset>/results.json`
+- **Checkpoints:** `checkpoints/cifar10/{arch}_{regime}_seed{seed}_a{alpha_train}.pt`
+- **Results:** `results/cifar10/summary.csv`, `results/cifar10/sweep.csv`, `results/cifar10/results.json`
 - Existing checkpoints are **skipped**; new runs are **merged** into existing summary/sweep CSVs by (architecture, regime, seed, alpha_train).
 
-### Choose dataset and architectures
+### Choose architectures
 
-- **Dataset:** `--dataset mnist` or `--dataset cifar10`.
 - **Architectures:** pass as positional arguments. If none are given, all are run.
 
 ```bash
-# MNIST, only MLP variants and CNN (faster)
+# Only MLP variants and CNN (faster)
 python run_experiments.py mlp_small mlp_medium mlp_large cnn
 
-# MNIST, only ResNet-18
+# Only ResNet-18
 python run_experiments.py resnet18
 
-# CIFAR-10, ResNet-18 only
-python run_experiments.py --dataset cifar10 resnet18
-
-# All 5 architectures on CIFAR-10
-python run_experiments.py --dataset cifar10 mlp_small mlp_medium mlp_large cnn resnet18
+# All 5 architectures (default when no args)
+python run_experiments.py mlp_small mlp_medium mlp_large cnn resnet18
 ```
 
 **Architecture names:** `mlp_small`, `mlp_medium`, `mlp_large`, `cnn`, `resnet18`.
@@ -71,8 +64,8 @@ Expect: `Sanity OK: noisy-trained has smaller or similar drop ...` (with 1 epoch
 ### Optional module checks
 
 ```bash
-python data.py    # DataLoader shapes for mnist and cifar10
-python models.py  # All architectures: (2, C, H, W) → (2, 10)
+python data.py    # DataLoader shapes for CIFAR-10
+python models.py  # All architectures: (2, 3, 32, 32) → (2, 10)
 python noise.py   # Weight noise apply/remove restores params
 ```
 
@@ -100,12 +93,9 @@ Single place for seeds, noise strengths, and training/eval settings.
 
 Change these and re-run; checkpoint filenames include `alpha_train` so different noise levels do not overwrite.
 
-### Datasets
+### Dataset
 
-- **Supported:** `mnist`, `cifar10` (see `data.DATASET_CHOICES`).
-- **Adding a dataset:** Implement a `get_*_loaders(...)` in `data.py` (and optionally a transform with optional `resize`). Then add the name to `DATASET_CHOICES` and a branch in `get_loaders()`. In `run_experiments.py`, `--dataset` already uses `DATASET_CHOICES`; add the new name there if you extend the CLI.
-
-Input sizes: 28×28 for all current architectures. The data API supports an optional `resize` argument in `get_loaders()` if you add a model that needs a different input size.
+- **Supported:** CIFAR-10 only (see `data.DATASET_CHOICES`). Images are 32×32 RGB; optional `resize` in `get_loaders()` for architectures that need a different input size.
 
 ### Neural architectures
 
@@ -120,7 +110,7 @@ To **add an architecture:**
 3. Append `"your_arch"` to `ARCH_NAMES`.
 4. If the model expects a different input size (e.g. 224×224), use `get_loaders(dataset, resize=224)` for that architecture in `run_experiments.py` (or add a `RESIZE_ARCHS` pattern if you extend the script).
 
-MLP variants differ only by hidden dims: `mlp_small` (256, 128), `mlp_medium` (512, 256), `mlp_large` (1024, 512, 256). All use 3×28×28 flattened input and 10 classes unless you change `num_classes` or the data pipeline.
+MLP variants differ only by hidden dims: `mlp_small` (256, 128), `mlp_medium` (512, 256), `mlp_large` (1024, 512, 256). All use 3×32×32 flattened input and 10 classes unless you change `num_classes` or the data pipeline.
 
 ---
 

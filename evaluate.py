@@ -90,12 +90,12 @@ def load_and_sweep(arch_name, checkpoint_path, test_loader, device, alpha_list=N
 
 if __name__ == "__main__":
     # Sanity: load MLP checkpoints (if present), run short sweep
-    from data import get_mnist_loaders
+    from data import get_loaders
     device = config.DEVICE
-    _, test_loader = get_mnist_loaders()
+    _, test_loader = get_loaders("cifar10")
     for name, path in [("mlp_clean", "checkpoint_mlp_clean.pt"), ("mlp_noisy", "checkpoint_mlp_noisy.pt")]:
         try:
-            _, results = load_and_sweep("mlp", path, test_loader, device)
+            _, results = load_and_sweep("mlp_small", path, test_loader, device)
             drop = accuracy_drop_at_01(results)
             print(f"{name}: acc@0={results[0]['acc']:.4f}, acc@0.1={next(r['acc'] for r in results if r['alpha']==0.1):.4f}, drop={drop:.4f}")
         except FileNotFoundError:

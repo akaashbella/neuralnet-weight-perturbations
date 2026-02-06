@@ -1,6 +1,6 @@
 """
 Five architectures: MLP (3 variants), Simple CNN, ResNet-18.
-All accept 3-channel input (B, 3, 28, 28) and output 10-class logits.
+All accept 3-channel CIFAR-10 input (B, 3, 32, 32) and output 10-class logits.
 MLP variants: mlp_small, mlp_medium, mlp_large (differ by hidden dims).
 """
 
@@ -14,7 +14,7 @@ from torchvision import models
 class MLP(nn.Module):
     """MLP: flatten, configurable hidden layers with ReLU, output 10 classes."""
 
-    def __init__(self, input_dim=3 * 28 * 28, hidden_dims=(512, 256), num_classes=10):
+    def __init__(self, input_dim=3 * 32 * 32, hidden_dims=(512, 256), num_classes=10):
         super().__init__()
         self.input_dim = input_dim
         dims = [input_dim] + list(hidden_dims) + [num_classes]
@@ -30,7 +30,7 @@ class MLP(nn.Module):
         return self.net(x)
 
 
-# Three MLP variants (same input 3*28*28, 10 classes; differ by depth/width):
+# Three MLP variants (same input 3*32*32, 10 classes; differ by depth/width):
 # - mlp_small:  (256, 128)     — narrow & shallow, fewer params
 # - mlp_medium: (512, 256)     — baseline
 # - mlp_large:  (1024, 512, 256) — wider & deeper, more capacity
@@ -57,8 +57,8 @@ class SimpleCNN(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2),
         )
-        # 28 -> 14 -> 7 -> 3 (after three pool-2)
-        self.classifier = nn.Linear(64 * 3 * 3, num_classes)
+        # 32 -> 16 -> 8 -> 4 (after three pool-2)
+        self.classifier = nn.Linear(64 * 4 * 4, num_classes)
 
     def forward(self, x):
         x = self.features(x)
@@ -98,7 +98,7 @@ ARCH_NAMES = ["mlp_small", "mlp_medium", "mlp_large", "cnn", "resnet18"]
 if __name__ == "__main__":
     # Sanity check: each model accepts correct input size and returns (2, 10)
     for name in ARCH_NAMES:
-        x = torch.randn(2, 3, 28, 28)
+        x = torch.randn(2, 3, 32, 32)
         model = get_model(name)
         model.eval()
         with torch.no_grad():

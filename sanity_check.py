@@ -14,7 +14,7 @@ from train import train_one
 
 def main():
     device = config.DEVICE
-    train_loader, test_loader = get_loaders("mnist")
+    train_loader, test_loader = get_loaders("cifar10")
     alpha_sanity = [0.0, 0.1]  # only 0 and 0.1 for quick check
     arch = "mlp_small"
 

@@ -25,7 +25,7 @@ LEARNING_RATE = 1e-3
 DATA_DIR = "./data"
 CHECKPOINT_DIR = "./checkpoints"
 RESULTS_DIR = "./results"
-MNIST_IMAGE_SIZE = 28  # MNIST is 28x28; resize in transform if needed for an architecture
+IMAGE_SIZE = 32  # CIFAR-10 is 32×32; resize in transform if needed for an architecture
 
 # Device
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"  # set to "cpu" if no GPU

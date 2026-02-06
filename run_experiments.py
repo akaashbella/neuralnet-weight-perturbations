@@ -24,10 +24,10 @@ def checkpoint_path(arch, regime, seed, alpha_train=None, base_dir=None):
     return os.path.join(base_dir, f"{arch}_{regime}_seed{seed}_a{alpha_train:.2f}.pt")
 
 
-def run_all(dataset="mnist", architectures=None):
+def run_all(dataset="cifar10", architectures=None):
     """
     Run training + robustness sweep for given dataset and architectures.
-    dataset: "mnist" or "cifar10"
+    dataset: "cifar10" (only supported dataset)
     architectures: list of arch names. If None, run all ARCH_NAMES.
     """
     archs = architectures if architectures is not None else ARCH_NAMES
@@ -208,9 +208,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--dataset",
-        default="mnist",
+        default="cifar10",
         choices=DATASET_CHOICES,
-        help="Dataset to train and evaluate on (default: mnist).",
+        help="Dataset to train and evaluate on (default: cifar10).",
     )
     parser.add_argument(
         "architectures",
