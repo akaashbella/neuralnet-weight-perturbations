@@ -1,7 +1,7 @@
 """
 Train models, run robustness sweep, log results, save to CSV/JSON.
 Checkpoints under config.CHECKPOINT_DIR; results under config.RESULTS_DIR.
-Run all architectures (default) or only selected ones: python run_experiments.py [mlp_small] [mlp_medium] [mlp_large] [cnn] [resnet18]
+Run all architectures (default) or selected: python run_experiments.py [cnn] [mlp] [plainnet20] [resnet20] [mobilenet_v2] [vit_lite]
 """
 
 import argparse
@@ -12,7 +12,7 @@ import os
 import config
 from data import get_loaders
 from evaluate import accuracy_drop_at_01, load_and_sweep
-from models import ARCH_NAMES
+from models import ARCH_NAMES, ARCH_INPUT_RESIZE, ALL_ARCH_NAMES
 from train import train_one
 
 
@@ -27,46 +27,69 @@ def checkpoint_path(arch, regime, seed, alpha_train=None, base_dir=None):
 def run_all(dataset="cifar10", architectures=None):
     """
     Run training + robustness sweep for given dataset and architectures.
-    dataset: "cifar10" (only supported dataset)
-    architectures: list of arch names. If None, run all ARCH_NAMES.
+    Regimes and alpha_train come from config.ALPHA_TRAIN_LIST (no hardcoding).
+    Per-arch resize from ARCH_INPUT_RESIZE (default 32).
     """
     archs = architectures if architectures is not None else ARCH_NAMES
     for a in archs:
-        if a not in ARCH_NAMES:
-            raise ValueError(f"Unknown architecture: {a}. Choose from {ARCH_NAMES}")
+        if a not in ALL_ARCH_NAMES:
+            raise ValueError(f"Unknown architecture: {a}. Choose from {ALL_ARCH_NAMES}")
 
-    alpha_train = config.ALPHA_TRAIN
+    alpha_train_list = config.ALPHA_TRAIN_LIST
+    if len(alpha_train_list) < 2:
+        raise ValueError("ALPHA_TRAIN_LIST must have at least 2 values (clean, noisy).")
+    # First = clean (no noise), second = noisy (noise-regularized)
+    clean_alpha, noisy_alpha = alpha_train_list[0], alpha_train_list[1]
+    train_regimes = [
+        ("clean", False, clean_alpha),
+        ("noisy", True, noisy_alpha),
+    ]
+
     device = config.DEVICE
     checkpoint_dir = os.path.join(config.CHECKPOINT_DIR, dataset)
     results_dir = os.path.join(config.RESULTS_DIR, dataset)
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(results_dir, exist_ok=True)
 
+    # Per-arch resize (centralized); default 32 for CIFAR
+    def resize_for(arch):
+        return ARCH_INPUT_RESIZE.get(arch, 32)
+
+    # Loaders per unique resize to avoid redundant builds
+    unique_resizes = {resize_for(a) for a in archs}
+    loaders_by_resize = {}
+    for r in unique_resizes:
+        loaders_by_resize[r] = get_loaders(dataset, resize=r if r != 32 else None)
+
     print(f"Using device: {device}")
     print(f"Dataset: {dataset}")
-    print(f"Alpha (train): {alpha_train}")
+    print(f"Alpha (train) from ALPHA_TRAIN_LIST: clean={clean_alpha}, noisy={noisy_alpha}")
     print(f"Architectures: {archs}")
-    train_loader, test_loader = get_loaders(dataset)
 
-    # Train (skip if checkpoint already exists)
+    # Train: for each (arch, seed, regime) with regime-specific alpha_train
     for seed in config.SEEDS:
         for arch in archs:
-            for regime, noisy in [("clean", False), ("noisy", True)]:
+            train_loader, _ = loaders_by_resize[resize_for(arch)]
+            for regime, noisy, alpha_train in train_regimes:
                 path = checkpoint_path(arch, regime, seed, alpha_train, base_dir=checkpoint_dir)
                 if os.path.isfile(path):
                     print(f"skip training {arch} {regime} seed={seed}")
                     continue
-                print(f"\n--- train {arch} {regime} seed={seed} -> {path}")
-                train_one(arch, train_loader, noisy=noisy, seed=seed, device=device, save_path=path)
+                print(f"\n--- train {arch} {regime} seed={seed} a_train={alpha_train} -> {path}")
+                train_one(
+                    arch, train_loader, noisy=noisy, seed=seed, device=device,
+                    save_path=path, alpha_train=alpha_train,
+                )
 
-    # Robustness sweep only for architectures we ran; collect results
+    # Robustness sweep: same resize per arch as training
     print("\n" + "=" * 60 + "\nRobustness evaluation\n")
-    summary_rows = []  # Architecture, Regime, Seed, Acc(0), Acc(0.1), Drop
-    sweep_rows = []    # Architecture, Regime, Seed, alpha_test, Acc, Loss
+    summary_rows = []
+    sweep_rows = []
     drops_by_arch_regime = {}
 
     for arch in archs:
-        for regime in ["clean", "noisy"]:
+        _, test_loader = loaders_by_resize[resize_for(arch)]
+        for regime, _, alpha_train in train_regimes:
             drops_by_arch_regime[(arch, regime)] = []
             for seed in config.SEEDS:
                 path = checkpoint_path(arch, regime, seed, alpha_train, base_dir=checkpoint_dir)
@@ -82,21 +105,21 @@ def run_all(dataset="cifar10", architectures=None):
                     "regime": regime,
                     "seed": seed,
                     "dataset": dataset,
-                    "alpha_train": alpha_train,
+                    "alpha_train": float(alpha_train),
                     "acc_0": acc0,
                     "acc_01": acc01,
                     "drop_at_01": drop,
                 })
-                for r in sweep:
+                for rec in sweep:
                     sweep_rows.append({
                         "architecture": arch,
                         "regime": regime,
                         "seed": seed,
                         "dataset": dataset,
-                        "alpha_train": alpha_train,
-                        "alpha_test": r["alpha"],
-                        "acc": r["acc"],
-                        "loss": r["loss"],
+                        "alpha_train": float(alpha_train),
+                        "alpha_test": rec["alpha"],
+                        "acc": rec["acc"],
+                        "loss": rec["loss"],
                     })
                 drops_by_arch_regime[(arch, regime)].append(drop)
                 print(f"{arch} {regime} seed={seed}: acc@0={acc0:.4f} acc@0.1={acc01:.4f} drop={drop:.4f}")
@@ -215,8 +238,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "architectures",
         nargs="*",
-        choices=ARCH_NAMES,
-        help=f"Architectures to run (default: all). Choices: {ARCH_NAMES}",
+        choices=ALL_ARCH_NAMES,
+        help=f"Architectures to run (default: core set). Choices: {ALL_ARCH_NAMES}",
     )
     args = parser.parse_args()
     run_all(dataset=args.dataset, architectures=args.architectures if args.architectures else None)

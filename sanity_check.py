@@ -27,7 +27,7 @@ def main():
         print(f"Training {arch} noisy (1 epoch)...")
         train_one(arch, train_loader, noisy=True, seed=0, device=device, save_path=noisy_path, epochs=1)
 
-        print("\nRobustness at α_test ∈ {0, 0.1}:")
+        print("\nRobustness at alpha_test in {0, 0.1}:")
         _, sweep_clean = load_and_sweep(arch, clean_path, test_loader, device, alpha_list=alpha_sanity)
         _, sweep_noisy = load_and_sweep(arch, noisy_path, test_loader, device, alpha_list=alpha_sanity)
 

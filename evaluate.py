@@ -88,14 +88,32 @@ def load_and_sweep(arch_name, checkpoint_path, test_loader, device, alpha_list=N
     return model, results
 
 
+def assert_weights_unchanged_after_sweep(model, test_loader, device, alpha_list=None):
+    """
+    Sanity check: run_robustness_sweep uses a context manager that adds/removes noise,
+    so after the sweep the model's weights must equal the original. Catches "noise not removed" regressions.
+    """
+    state_before = {n: p.data.clone() for n, p in model.named_parameters()}
+    run_robustness_sweep(model, test_loader, device, alpha_list=alpha_list or [0.0, 0.1], num_samples=2)
+    for n, p in model.named_parameters():
+        assert torch.allclose(p.data, state_before[n]), f"Param {n} changed after sweep (noise not restored)"
+    return True
+
+
 if __name__ == "__main__":
-    # Sanity: load MLP checkpoints (if present), run short sweep
     from data import get_loaders
     device = config.DEVICE
     _, test_loader = get_loaders("cifar10")
+
+    # Sanity: weights unchanged after sweep (noise is add/remove, not permanent)
+    model = get_model("mlp").to(device)
+    assert_weights_unchanged_after_sweep(model, test_loader, device)
+    print("evaluate.py: weights unchanged after sweep (OK)")
+
+    # Optional: load MLP checkpoints (if present), run short sweep
     for name, path in [("mlp_clean", "checkpoint_mlp_clean.pt"), ("mlp_noisy", "checkpoint_mlp_noisy.pt")]:
         try:
-            _, results = load_and_sweep("mlp_small", path, test_loader, device)
+            _, results = load_and_sweep("mlp", path, test_loader, device)
             drop = accuracy_drop_at_01(results)
             print(f"{name}: acc@0={results[0]['acc']:.4f}, acc@0.1={next(r['acc'] for r in results if r['alpha']==0.1):.4f}, drop={drop:.4f}")
         except FileNotFoundError:

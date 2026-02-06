@@ -5,9 +5,10 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 ## Features
 
 - **Dataset:** CIFAR-10 (32×32 RGB, 10 classes; optional resize per architecture). Standard channel-wise normalization; training uses random crop (padding=4) + horizontal flip.
-- **Architectures:** 5 models — MLP (small / medium / large), Simple CNN, ResNet-18. All use 32×32 input. ResNet-18 uses a CIFAR-optimized stem (3×3 stride 1, no maxpool).
-- **Training:** Clean regime (standard training) or noisy regime (per-batch Gaussian weight noise before forward/backward; optimizer updates clean weights).
-- **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1 as main metric. Results merged into dataset-specific CSVs and JSON.
+- **Architectures (core set):** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. All CIFAR-10–safe (32×32 input). Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`.
+- **Training:** Clean regime (α_train=0.0) and noisy regime (α_train=0.05); per-batch weight noise in noisy regime; optimizer updates clean weights.
+- **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1; results merged into dataset-specific CSVs and JSON.
+- **Plots:** `scripts/plot_robustness_curves.py` produces robustness decay curves and drop@0.1 bar chart.
 
 ## Setup
 
@@ -15,7 +16,7 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 pip install -r requirements.txt
 ```
 
-Requires: `torch>=2.0.0`, `torchvision>=0.15.0`. Data is downloaded under `./data` on first run.
+Requires: `torch>=2.0.0`, `torchvision>=0.15.0`, `matplotlib>=3.5.0`. Data is downloaded under `./data` on first run.
 
 ---
 
@@ -26,30 +27,40 @@ Requires: `torch>=2.0.0`, `torchvision>=0.15.0`. Data is downloaded under `./dat
 Trains every architecture in both regimes over 3 seeds, then runs the robustness sweep and writes results. Checkpoints and results are under `checkpoints/cifar10/` and `results/cifar10/`.
 
 ```bash
-# Default: CIFAR-10, all 5 architectures (5 × 2 regimes × 3 seeds = 30 models)
+# Default: CIFAR-10, core architectures (cnn, mlp, plainnet20, resnet20, mobilenet_v2, vit_lite) × 2 regimes × 3 seeds
 python run_experiments.py
 ```
 
-- **Checkpoints:** `checkpoints/cifar10/{arch}_{regime}_seed{seed}_a{alpha_train}.pt`
+- **Checkpoints:** `checkpoints/cifar10/{arch}_{regime}_seed{seed}_a{alpha_train}.pt` (clean a=0.00, noisy a=0.05)
 - **Results:** `results/cifar10/summary.csv`, `results/cifar10/sweep.csv`, `results/cifar10/results.json`
-- Existing checkpoints are **skipped**; new runs are **merged** into existing summary/sweep CSVs by (architecture, regime, seed, alpha_train).
+- Existing checkpoints are **skipped**; new runs are **merged** by (architecture, regime, seed, alpha_train).
 
 ### Choose architectures
 
-- **Architectures:** pass as positional arguments. If none are given, all are run.
+Pass architecture names as positional arguments. If none are given, the full core set is run.
 
 ```bash
-# Only MLP variants and CNN (faster)
-python run_experiments.py mlp_small mlp_medium mlp_large cnn
+# Core set only (faster)
+python run_experiments.py cnn mlp plainnet20 resnet20
 
-# Only ResNet-18
-python run_experiments.py resnet18
+# With ViT and MobileNet
+python run_experiments.py cnn mlp resnet20 mobilenet_v2 vit_lite
 
-# All 5 architectures (default when no args)
-python run_experiments.py mlp_small mlp_medium mlp_large cnn resnet18
+# All core (default)
+python run_experiments.py
 ```
 
-**Architecture names:** `mlp_small`, `mlp_medium`, `mlp_large`, `cnn`, `resnet18`.
+**Core architecture names:** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`.
+
+### Plot figures
+
+After running experiments, generate the two main figures (robustness decay curves and drop@0.1 bar chart):
+
+```bash
+python scripts/plot_robustness_curves.py --dataset cifar10
+```
+
+Outputs: `results/cifar10/robustness_curves.png`, `results/cifar10/drop_at_01_bars.png`.
 
 ### Quick sanity check (1 epoch, MLP only)
 
@@ -65,8 +76,9 @@ Expect: `Sanity OK: noisy-trained has smaller or similar drop ...` (with 1 epoch
 
 ```bash
 python data.py    # DataLoader shapes for CIFAR-10
-python models.py  # All architectures: (2, 3, 32, 32) → (2, 10)
+python -c "from models import get_model, ARCH_NAMES; [get_model(n) for n in ARCH_NAMES]"  # Forward pass
 python noise.py   # Weight noise apply/remove restores params
+python evaluate.py  # Weights unchanged after sweep (invariant check), then optional checkpoint sweep
 ```
 
 ---
@@ -80,12 +92,14 @@ Single place for seeds, noise strengths, and training/eval settings.
 | Variable | Meaning | Default |
 |----------|---------|--------|
 | `SEEDS` | Random seeds (one model per seed × regime × arch) | `[0, 1, 2]` |
-| `ALPHA_TRAIN` | Training-time weight noise (noisy regime only) | `0.05` |
-| `ALPHA_TEST_LIST` | Evaluation perturbation strengths (0.5 can saturate to near-random; useful as “break” point) | `[0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5]` |
+| `ALPHA_TRAIN` | Fallback when alpha_train not passed (orchestration uses ALPHA_TRAIN_LIST) | `0.05` |
+| `ALPHA_TRAIN_LIST` | [clean_alpha, noisy_alpha]; run_experiments trains both regimes from this | `[0.0, 0.05]` |
+| `ALPHA_TEST_LIST` | Evaluation perturbation strengths for robustness sweep (optionally add 0.5 in config for a “break” point) | `[0, 0.01, 0.02, 0.05, 0.1, 0.2]` |
 | `ROBUSTNESS_NUM_SAMPLES` | Noise samples per α_test for averaging | `5` |
 | `EPOCHS` | Training epochs (all architectures) | `40` |
 | `BATCH_SIZE` | Training/eval batch size | `128` |
 | `LEARNING_RATE` | Adam learning rate | `1e-3` |
+| `WEIGHT_DECAY` | Adam weight decay (same for all architectures) | `5e-4` |
 | `DATA_DIR` | Dataset root | `./data` |
 | `CHECKPOINT_DIR` | Checkpoint root (per-dataset subdirs added by script) | `./checkpoints` |
 | `RESULTS_DIR` | Results root (per-dataset subdirs) | `./results` |
@@ -93,7 +107,7 @@ Single place for seeds, noise strengths, and training/eval settings.
 
 Reproducibility: `set_seed()` (in `train.py`) sets PyTorch and CUDA seeds and uses `cudnn.deterministic=True`, `cudnn.benchmark=False` for tighter GPU reproducibility.
 
-Change these and re-run; checkpoint filenames include `alpha_train` so different noise levels do not overwrite.
+**Training recipe:** A single recipe (Adam, one LR, one weight decay, CIFAR-style augmentation, no scheduler) is used for all architectures so that robustness comparisons reflect geometry, not training quirks. Change config and re-run; checkpoint filenames include `alpha_train` so different noise levels do not overwrite.
 
 ### Dataset and data recipe
 
@@ -102,19 +116,12 @@ Change these and re-run; checkpoint filenames include `alpha_train` so different
 
 ### Neural architectures
 
-- **Defined in:** `models.py`.
+- **Defined in:** `models/` package (`models/__init__.py`, `resnet_cifar.py`, `vit_lite.py`, etc.).
 - **Factory:** `get_model(name, num_classes=10)`.
-- **Names:** `ARCH_NAMES = ["mlp_small", "mlp_medium", "mlp_large", "cnn", "resnet18"]`.
-- **ResNet-18:** Uses a CIFAR-optimized stem (first conv 3×3 stride 1, no maxpool) so 32×32 input is handled well; baseline accuracy and noise sensitivity are more comparable to other CIFAR setups.
+- **Core names:** `ARCH_NAMES = ["cnn", "mlp", "plainnet20", "resnet20", "mobilenet_v2", "vit_lite"]`.
+- **Resize:** Centralized in `models.ARCH_INPUT_RESIZE` (default 32 for CIFAR); used by `run_experiments.py` for loaders.
 
-To **add an architecture:**
-
-1. Implement the model (or wrap a torchvision model) so it takes `(B, C, H, W)` and returns `(B, num_classes)` logits.
-2. In `get_model()`, add a branch: `if name == "your_arch": return YourModel(...)`.
-3. Append `"your_arch"` to `ARCH_NAMES`.
-4. If the model expects a different input size (e.g. 224×224), use `get_loaders(dataset, resize=224)` for that architecture in `run_experiments.py` (or add a `RESIZE_ARCHS` pattern if you extend the script).
-
-MLP variants differ only by hidden dims: `mlp_small` (256, 128), `mlp_medium` (512, 256), `mlp_large` (1024, 512, 256). All use 3×32×32 flattened input and 10 classes unless you change `num_classes` or the data pipeline.
+To **add an architecture:** implement the model (input `(B, 3, 32, 32)` or documented resize, output `(B, num_classes)`), add a branch in `get_model()` in `models/__init__.py`, and append to `ARCH_NAMES` or `ARCH_NAMES_OPTIONAL`. Add an entry to `ARCH_INPUT_RESIZE` if the input size is not 32.
 
 ---
 
