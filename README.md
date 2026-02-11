@@ -24,10 +24,10 @@ Requires: `torch>=2.0.0`, `torchvision>=0.15.0`, `matplotlib>=3.5.0`. Data is do
 
 ### Full experiment (all architectures, one dataset)
 
-Trains every architecture in both regimes over 3 seeds, then runs the robustness sweep and writes results. Checkpoints and results are under `checkpoints/cifar10/` and `results/cifar10/`.
+Trains every architecture in both regimes over 10 seeds (0–9), then runs the robustness sweep and writes results. Checkpoints and results are under `checkpoints/cifar10/` and `results/cifar10/`.
 
 ```bash
-# Default: CIFAR-10, core architectures (cnn, mlp, plainnet20, resnet20, mobilenet_v2, vit_lite) × 2 regimes × 3 seeds
+# Default: CIFAR-10, core architectures (cnn, mlp, plainnet20, resnet20, mobilenet_v2, vit_lite) × 2 regimes × 10 seeds
 python run_experiments.py
 ```
 
@@ -91,15 +91,15 @@ Single place for seeds, noise strengths, and training/eval settings.
 
 | Variable | Meaning | Default |
 |----------|---------|--------|
-| `SEEDS` | Random seeds (one model per seed × regime × arch) | `[0, 1, 2]` |
+| `SEEDS` | Random seeds (one model per seed × regime × arch) | `[0, 1, …, 9]` (10 seeds) |
 | `ALPHA_TRAIN` | Fallback when alpha_train not passed (orchestration uses ALPHA_TRAIN_LIST) | `0.05` |
 | `ALPHA_TRAIN_LIST` | [clean_alpha, noisy_alpha]; run_experiments trains both regimes from this | `[0.0, 0.05]` |
-| `ALPHA_TEST_LIST` | Evaluation perturbation strengths for robustness sweep (optionally add 0.5 in config for a “break” point) | `[0, 0.01, 0.02, 0.05, 0.1, 0.2]` |
-| `ROBUSTNESS_NUM_SAMPLES` | Noise samples per α_test for averaging | `5` |
-| `EPOCHS` | Training epochs (all architectures) | `40` |
+| `ALPHA_TEST_LIST` | Evaluation perturbation strengths for robustness sweep | `[0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5]` |
+| `ROBUSTNESS_NUM_SAMPLES` | Noise samples per α_test for averaging | `10` |
+| `EPOCHS` | Training epochs (all architectures) | `200` |
 | `BATCH_SIZE` | Training/eval batch size | `128` |
-| `LEARNING_RATE` | Adam learning rate | `1e-3` |
-| `WEIGHT_DECAY` | Adam weight decay (same for all architectures) | `5e-4` |
+| `LEARNING_RATE` | AdamW learning rate | `3e-4` |
+| `WEIGHT_DECAY` | AdamW weight decay (decoupled; same for all architectures) | `1e-2` |
 | `DATA_DIR` | Dataset root | `./data` |
 | `CHECKPOINT_DIR` | Checkpoint root (per-dataset subdirs added by script) | `./checkpoints` |
 | `RESULTS_DIR` | Results root (per-dataset subdirs) | `./results` |
@@ -107,7 +107,7 @@ Single place for seeds, noise strengths, and training/eval settings.
 
 Reproducibility: `set_seed()` (in `train.py`) sets PyTorch and CUDA seeds and uses `cudnn.deterministic=True`, `cudnn.benchmark=False` for tighter GPU reproducibility.
 
-**Training recipe:** A single recipe (Adam, one LR, one weight decay, CIFAR-style augmentation, no scheduler) is used for all architectures so that robustness comparisons reflect geometry, not training quirks. Change config and re-run; checkpoint filenames include `alpha_train` so different noise levels do not overwrite.
+**Training recipe:** A single recipe (AdamW with lr=3e-4, weight_decay=1e-2, cosine LR schedule over 200 epochs with eta_min=0, CIFAR-style augmentation) is used for all architectures so that robustness comparisons reflect geometry and weight noise, not training quirks. Change config and re-run; checkpoint filenames include `alpha_train` so different noise levels do not overwrite.
 
 ### Dataset and data recipe
 

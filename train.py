@@ -5,6 +5,7 @@ Optimizer updates the clean weights; noisy training uses W+ε only for forward/b
 
 import torch
 import torch.nn as nn
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import config
 from data import get_loaders
@@ -30,11 +31,12 @@ def train_one(arch_name, train_loader, noisy, seed, device, save_path=None, epoc
     """
     set_seed(seed)
     model = get_model(arch_name).to(device)
-    optimizer = torch.optim.Adam(
+    optimizer = torch.optim.AdamW(
         model.parameters(), lr=config.LEARNING_RATE, weight_decay=config.WEIGHT_DECAY
     )
     criterion = nn.CrossEntropyLoss()
     n_epochs = epochs if epochs is not None else config.EPOCHS
+    scheduler = CosineAnnealingLR(optimizer, T_max=n_epochs, eta_min=0.0)
     alpha = alpha_train if alpha_train is not None else config.ALPHA_TRAIN
     model.train()
 
@@ -57,6 +59,7 @@ def train_one(arch_name, train_loader, noisy, seed, device, save_path=None, epoc
             optimizer.step()
 
             running_loss += loss.item()
+        scheduler.step()
         # Minimal logging: mean loss per epoch
         n_batches = len(train_loader)
         print(f"  epoch {epoch + 1}/{n_epochs} loss={running_loss / n_batches:.4f}")
