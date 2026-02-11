@@ -1,7 +1,8 @@
 """
 ResNet and PlainNet for CIFAR-10 (He et al. style).
-ResNet-20/32: residual blocks with skip connections.
-PlainNet-20: same depth/width as ResNet-20 but no skip connections (topology control).
+ResNet: residual blocks with skip connections (identity/downsample branch).
+PlainNet: same conv depth and channel widths as the corresponding ResNet, but no skip
+connections — different computation graph, isolates effect of residual topology.
 Input: (B, 3, 32, 32). Output: (B, num_classes).
 """
 
@@ -113,6 +114,15 @@ def resnet32(num_classes=10):
     return ResNetCIFAR(BasicBlock, [5, 5, 5], num_classes=num_classes)
 
 
+def resnet56(num_classes=10):
+    return ResNetCIFAR(BasicBlock, [9, 9, 9], num_classes=num_classes)
+
+
 def plainnet20(num_classes=10):
-    """Same depth/width as ResNet-20, no skip connections."""
+    """Same conv depth and channel widths as ResNet-20; no skip connections."""
     return ResNetCIFAR(PlainBlock, [3, 3, 3], num_classes=num_classes)
+
+
+def plainnet56(num_classes=10):
+    """Same conv depth and channel widths as ResNet-56; no skip connections."""
+    return ResNetCIFAR(PlainBlock, [9, 9, 9], num_classes=num_classes)
