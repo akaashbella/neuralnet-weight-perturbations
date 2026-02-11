@@ -8,13 +8,12 @@ from .mlp import MLP, MLP_LARGE_DIMS, MLP_MEDIUM_DIMS, MLP_SMALL_DIMS
 from .resnet_cifar import plainnet20, resnet20, resnet32
 from .mobilenet import mobilenet_v2_cifar
 from .vit_lite import vit_lite
+from .row_gru import RowGRU
+from .row_lstm import RowLSTM
 
 # Centralized resize: only architectures that need non-default input size.
 # Default is 32 (CIFAR native); list here only if different.
-ARCH_INPUT_RESIZE = {
-    "vit_lite": 32,
-    "mobilenet_v2": 32,
-}
+ARCH_INPUT_RESIZE = {}
 
 # Core set per IMPLEMENTATION_PLAN: floor, control, topology test, residual, efficiency, global.
 ARCH_NAMES = [
@@ -33,6 +32,8 @@ ARCH_NAMES_OPTIONAL = [
     "mlp_large",
     "resnet32",
     "resnet18",
+    "row_gru",
+    "row_lstm",
 ]
 ALL_ARCH_NAMES = ARCH_NAMES + ARCH_NAMES_OPTIONAL
 
@@ -57,6 +58,10 @@ def get_model(name, num_classes=10):
         return mobilenet_v2_cifar(num_classes=num_classes)
     if name == "vit_lite":
         return vit_lite(num_classes=num_classes)
+    if name == "row_gru":
+        return RowGRU(num_classes=num_classes)
+    if name == "row_lstm":
+        return RowLSTM(num_classes=num_classes)
     if name == "resnet18":
         from torchvision import models
         import torch.nn as nn
