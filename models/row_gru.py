@@ -7,6 +7,8 @@ import torch.nn as nn
 
 
 class RowGRU(nn.Module):
+    """Row-GRU: hidden_size=256/512, num_layers=1/2, dropout only when num_layers > 1."""
+
     def __init__(self, num_classes=10, hidden_size=256, num_layers=1, dropout=0.0):
         super().__init__()
         self.hidden_size = hidden_size
