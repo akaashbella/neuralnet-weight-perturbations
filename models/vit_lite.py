@@ -122,8 +122,8 @@ class ViTLite(nn.Module):
         return self.head(cls_out)
 
 
-def vit_lite(num_classes=10, patch_size=4, embed_dim=192, depth=6, num_heads=4):
-    """ViT-Lite for 32×32 CIFAR-10; patch_size=4 -> 64 tokens."""
+def vit_lite(num_classes=10, patch_size=4, embed_dim=192, depth=6, num_heads=4, dropout=0.1):
+    """ViT-Lite for 32×32 CIFAR-10; patch_size=4 -> 64 tokens. dropout=0.1 for stability."""
     return ViTLite(
         img_size=32,
         patch_size=patch_size,
@@ -133,5 +133,20 @@ def vit_lite(num_classes=10, patch_size=4, embed_dim=192, depth=6, num_heads=4):
         depth=depth,
         num_heads=num_heads,
         mlp_ratio=4.0,
-        dropout=0.0,
+        dropout=dropout,
+    )
+
+
+def vit_lite_large(num_classes=10):
+    """ViT-Lite large: embed_dim=384, depth=12, num_heads=6, dropout=0.1."""
+    return ViTLite(
+        img_size=32,
+        patch_size=4,
+        in_chans=3,
+        num_classes=num_classes,
+        embed_dim=384,
+        depth=12,
+        num_heads=6,
+        mlp_ratio=4.0,
+        dropout=0.1,
     )
