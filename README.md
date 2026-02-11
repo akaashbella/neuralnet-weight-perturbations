@@ -5,7 +5,7 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 ## Features
 
 - **Dataset:** CIFAR-10 (32×32 RGB, 10 classes; optional resize per architecture). Standard channel-wise normalization; training uses random crop (padding=4) + horizontal flip.
-- **Architectures (core set):** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. All CIFAR-10–safe (32×32 input). Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`.
+- **Architectures (core set):** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. All CIFAR-10–safe (32×32 input). Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`, `row_gru`, `row_lstm`.
 - **Training:** Clean regime (α_train=0.0) and noisy regime (α_train=0.05); per-batch weight noise in noisy regime; optimizer updates clean weights.
 - **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1; results merged into dataset-specific CSVs and JSON.
 - **Plots:** `scripts/plot_robustness_curves.py` produces robustness decay curves and drop@0.1 bar chart.
@@ -50,7 +50,7 @@ python run_experiments.py cnn mlp resnet20 mobilenet_v2 vit_lite
 python run_experiments.py
 ```
 
-**Core architecture names:** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`.
+**Core architecture names:** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`, `row_gru`, `row_lstm`.
 
 ### Plot figures
 
