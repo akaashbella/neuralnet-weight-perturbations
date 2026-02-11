@@ -1,4 +1,5 @@
 """
+Type: Transformer (Vision Transformer).
 ViT-Lite for CIFAR-10: patch size 4, weak spatial prior, global attention.
 Input: (B, 3, 32, 32). Output: (B, num_classes).
 32/4 = 8 patches per side -> 64 tokens.

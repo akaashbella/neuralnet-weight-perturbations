@@ -1,4 +1,5 @@
 """
+Type: MLP (feedforward).
 Plain MLP: no spatial or topological inductive bias.
 Supports LayerNorm + Dropout and configurable hidden dims for base/large tiers.
 Input: (B, 3, 32, 32) flattened. Output: (B, num_classes).

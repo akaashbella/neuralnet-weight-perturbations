@@ -1,4 +1,5 @@
 """
+Type: CNN (MobileNet).
 MobileNetV2 with CIFAR-10 stem (first conv stride 1) and configurable width_mult + dropout.
 Input: (B, 3, 32, 32). Output: (B, num_classes).
 - mobilenet_v2: width_mult=1.0, dropout=0.2

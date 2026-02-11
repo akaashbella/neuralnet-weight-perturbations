@@ -166,6 +166,7 @@ def run_all(dataset="cifar10", architectures=None):
             return rows
         with open(path, newline="") as f:
             for row in csv.DictReader(f):
+                row["seed"] = int(row["seed"])
                 if "alpha_train" not in row or row.get("alpha_train") == "":
                     row["alpha_train"] = None  # legacy file
                 else:
@@ -181,6 +182,7 @@ def run_all(dataset="cifar10", architectures=None):
             return rows
         with open(path, newline="") as f:
             for row in csv.DictReader(f):
+                row["seed"] = int(row["seed"])
                 if "alpha_train" not in row or row.get("alpha_train") == "":
                     row["alpha_train"] = None
                 else:

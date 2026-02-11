@@ -5,11 +5,11 @@ All models: input (B, 3, 32, 32) [or documented resize], output (B, num_classes)
 
 from .cnn import SimpleCNN
 from .mlp import MLP, MLP_BASE_DIMS, MLP_LARGE_DIMS, MLP_MEDIUM_DIMS, MLP_SMALL_DIMS
-from .resnet_cifar import plainnet20, plainnet56, resnet20, resnet32, resnet56
-from .mobilenet import mobilenet_v2_cifar
+from .resnet import plainnet20, plainnet56, resnet20, resnet32, resnet56
+from .mobilenet_v2 import mobilenet_v2_cifar
 from .vit_lite import vit_lite, vit_lite_large
-from .row_gru import RowGRU
-from .row_lstm import RowLSTM
+from .gru import GRU
+from .lstm import LSTM
 
 # Centralized resize: only architectures that need non-default input size.
 # Default is 32 (CIFAR native); list here only if different.
@@ -102,13 +102,13 @@ def get_model(name, num_classes=10):
     if name == "vit_lite_large":
         return vit_lite_large(num_classes=num_classes)
     if name == "row_gru":
-        return RowGRU(num_classes=num_classes)
+        return GRU(num_classes=num_classes)
     if name == "row_gru_large":
-        return RowGRU(num_classes=num_classes, hidden_size=512, num_layers=2, dropout=0.2)
+        return GRU(num_classes=num_classes, hidden_size=512, num_layers=2, dropout=0.2)
     if name == "row_lstm":
-        return RowLSTM(num_classes=num_classes)
+        return LSTM(num_classes=num_classes)
     if name == "row_lstm_large":
-        return RowLSTM(num_classes=num_classes, hidden_size=512, num_layers=2, dropout=0.2)
+        return LSTM(num_classes=num_classes, hidden_size=512, num_layers=2, dropout=0.2)
     if name == "resnet18":
         import torch.nn as nn
         from torchvision import models

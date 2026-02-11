@@ -1,4 +1,5 @@
 """
+Type: CNN.
 CIFAR CNN: 3-stage conv blocks (Conv3x3->BN->ReLU x2 per stage), optional width tier.
 Input: (B, 3, 32, 32). Output: (B, num_classes).
 - cnn (base): C=64
