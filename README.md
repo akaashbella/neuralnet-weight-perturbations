@@ -5,7 +5,7 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 ## Features
 
 - **Dataset:** CIFAR-10 (32×32 RGB, 10 classes; optional resize per architecture). Standard channel-wise normalization; training uses random crop (padding=4) + horizontal flip.
-- **Architectures (core set):** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. All CIFAR-10–safe (32×32 input). Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`, `row_gru`, `row_lstm`.
+- **Architectures:** Core set `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`; extended capacity and optional variants below. All CIFAR-10–safe (32×32 input).
 - **Training:** Clean regime (α_train=0.0) and noisy regime (α_train=0.05); per-batch weight noise in noisy regime; optimizer updates clean weights.
 - **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1; results merged into dataset-specific CSVs and JSON.
 - **Plots:** `scripts/plot_robustness_curves.py` produces robustness decay curves and drop@0.1 bar chart.
@@ -50,7 +50,7 @@ python run_experiments.py cnn mlp resnet20 mobilenet_v2 vit_lite
 python run_experiments.py
 ```
 
-**Core architecture names:** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. Optional: `mlp_small`, `mlp_medium`, `mlp_large`, `resnet32`, `resnet18`, `row_gru`, `row_lstm`.
+**Core architecture names:** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. Optional and extended: see “Architecture variants (base vs large)” below.
 
 ### Plot figures
 
@@ -120,6 +120,17 @@ Reproducibility: `set_seed()` (in `train.py`) sets PyTorch and CUDA seeds and us
 - **Factory:** `get_model(name, num_classes=10)`.
 - **Core names:** `ARCH_NAMES = ["cnn", "mlp", "plainnet20", "resnet20", "mobilenet_v2", "vit_lite"]`.
 - **Resize:** Centralized in `models.ARCH_INPUT_RESIZE` (default 32 for CIFAR); used by `run_experiments.py` for loaders.
+
+#### Architecture variants (base vs large)
+
+A **single shared training recipe** (optimizer, scheduler, epochs) is used for all architectures so that robustness differences are attributable to **architecture and weight noise**, not per-model hyperparameters.
+
+- **Thesis core (base):** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite` — default capacity for comparability.
+- **Extended capacity:** stronger or deeper variants for testing capacity effects on weight-noise sensitivity:
+  - `cnn_large` (C=128), `mlp_large` (2048×2048×1024, LayerNorm+Dropout), `mobilenet_v2_large` (width_mult=1.4), `vit_lite_large` (embed_dim=384, depth=12), `plainnet56`, `resnet56`, `row_gru_large`, `row_lstm_large`.
+- **PlainNet vs ResNet:** PlainNet uses the same conv depth and channel widths as the corresponding ResNet but has no skip connections (different computation graph); use for topology/ablation comparisons.
+
+Optional / backward compat: `mlp_small`, `mlp_small_ln`, `mlp_medium`, `resnet32`, `resnet18`, `row_gru`, `row_lstm`. For thesis clarity: `mlp_small` is legacy (no LayerNorm/dropout); `mlp_small_ln` gives the same small capacity with LayerNorm+dropout so comparisons stay controlled.
 
 To **add an architecture:** implement the model (input `(B, 3, 32, 32)` or documented resize, output `(B, num_classes)`), add a branch in `get_model()` in `models/__init__.py`, and append to `ARCH_NAMES` or `ARCH_NAMES_OPTIONAL`. Add an entry to `ARCH_INPUT_RESIZE` if the input size is not 32.
 
