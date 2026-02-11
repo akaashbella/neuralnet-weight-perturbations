@@ -4,7 +4,7 @@ All models: input (B, 3, 32, 32) [or documented resize], output (B, num_classes)
 """
 
 from .cnn import SimpleCNN
-from .mlp import MLP, MLP_BASE_DIMS, MLP_LARGE_DIMS, MLP_MEDIUM_DIMS, MLP_SMALL_DIMS
+from .mlp import MLP, MLP_BASE_DIMS, MLP_LARGE_DIMS
 from .resnet import plainnet20, plainnet56, resnet20, resnet32, resnet56
 from .mobilenet_v2 import mobilenet_v2_cifar
 from .vit_lite import vit_lite, vit_lite_large
@@ -15,35 +15,32 @@ from .lstm import LSTM
 # Default is 32 (CIFAR native); list here only if different.
 ARCH_INPUT_RESIZE = {}
 
-# Core set (thesis baseline): same training recipe across all.
+# Main architectures (one per model file / variant).
 ARCH_NAMES = [
-    "cnn",           # floor
-    "mlp",           # control (plain MLP)
-    "plainnet20",    # topology test
-    "resnet20",      # residual
-    "mobilenet_v2",  # efficiency edge case
-    "vit_lite",      # global bias
+    "cnn",
+    "mlp",
+    "plainnet20",
+    "resnet20",
+    "mobilenet_v2",
+    "vit_lite",
+    "gru",
+    "lstm",
 ]
 
-# Optional: backward compat + extended capacity (base/large, deeper).
-ARCH_NAMES_OPTIONAL = [
-    "mlp_small",
-    "mlp_small_ln",  # same dims as mlp_small but LayerNorm+dropout (controlled recipe)
-    "mlp_medium",
-    "mlp_large",
+# Large (or deeper) variants of the main architectures.
+ARCH_NAMES_LARGE = [
     "cnn_large",
+    "mlp_large",
     "mobilenet_v2_large",
     "resnet32",
     "resnet56",
     "plainnet56",
     "vit_lite_large",
-    "resnet18",
-    "row_gru",
-    "row_lstm",
-    "row_gru_large",
-    "row_lstm_large",
+    "gru_large",
+    "lstm_large",
 ]
-ALL_ARCH_NAMES = ARCH_NAMES + ARCH_NAMES_OPTIONAL
+
+ALL_ARCH_NAMES = ARCH_NAMES + ARCH_NAMES_LARGE
 
 
 def get_model(name, num_classes=10):
@@ -55,23 +52,6 @@ def get_model(name, num_classes=10):
     if name == "mlp":
         return MLP(
             hidden_dims=MLP_BASE_DIMS,
-            num_classes=num_classes,
-            dropout=0.2,
-            use_layernorm=True,
-        )
-    if name == "mlp_medium":
-        return MLP(
-            hidden_dims=MLP_MEDIUM_DIMS,
-            num_classes=num_classes,
-            dropout=0.2,
-            use_layernorm=True,
-        )
-    if name == "mlp_small":
-        # Legacy: no LayerNorm/dropout; use mlp_small_ln for controlled recipe.
-        return MLP(hidden_dims=MLP_SMALL_DIMS, num_classes=num_classes)
-    if name == "mlp_small_ln":
-        return MLP(
-            hidden_dims=MLP_SMALL_DIMS,
             num_classes=num_classes,
             dropout=0.2,
             use_layernorm=True,
@@ -101,20 +81,12 @@ def get_model(name, num_classes=10):
         return vit_lite(num_classes=num_classes)
     if name == "vit_lite_large":
         return vit_lite_large(num_classes=num_classes)
-    if name == "row_gru":
+    if name == "gru":
         return GRU(num_classes=num_classes)
-    if name == "row_gru_large":
+    if name == "gru_large":
         return GRU(num_classes=num_classes, hidden_size=512, num_layers=2, dropout=0.2)
-    if name == "row_lstm":
+    if name == "lstm":
         return LSTM(num_classes=num_classes)
-    if name == "row_lstm_large":
+    if name == "lstm_large":
         return LSTM(num_classes=num_classes, hidden_size=512, num_layers=2, dropout=0.2)
-    if name == "resnet18":
-        import torch.nn as nn
-        from torchvision import models
-        model = models.resnet18(weights=None)
-        model.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
-        model.maxpool = nn.Identity()
-        model.fc = nn.Linear(model.fc.in_features, num_classes)
-        return model
     raise ValueError(f"Unknown architecture: {name}. Choose from {ALL_ARCH_NAMES}")

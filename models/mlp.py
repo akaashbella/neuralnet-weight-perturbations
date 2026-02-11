@@ -38,9 +38,6 @@ class MLP(nn.Module):
         return self.net(x)
 
 
-# Tier constants for backward compatibility and registry
-MLP_SMALL_DIMS = (256, 128)
-MLP_MEDIUM_DIMS = (512, 256)
-MLP_LARGE_DIMS = (2048, 2048, 1024)
-# Base (thesis default): stronger than old medium
+# Base and large tiers only.
 MLP_BASE_DIMS = (1024, 1024, 512)
+MLP_LARGE_DIMS = (2048, 2048, 1024)
