@@ -1,7 +1,7 @@
 """
 Train models, run robustness sweep, log results, save to CSV/JSON.
 Checkpoints under config.CHECKPOINT_DIR; results under config.RESULTS_DIR.
-Run all architectures (default) or selected: python run_experiments.py [cnn] [mlp] [plainnet20] [resnet20] [mobilenet_v2] [vit_lite]
+Run all architectures (default) or selected: python run_experiments.py [cnn] [mlp] [plainnet20] [resnet20] [mobilenet_v2] [vit_lite] [gru] [lstm]
 """
 
 import argparse

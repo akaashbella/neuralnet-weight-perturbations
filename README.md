@@ -5,7 +5,7 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 ## Features
 
 - **Dataset:** CIFAR-10 (32×32 RGB, 10 classes; optional resize per architecture). Standard channel-wise normalization; training uses random crop (padding=4) + horizontal flip.
-- **Architectures:** Core set `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`; extended capacity and optional variants below. All CIFAR-10–safe (32×32 input).
+- **Architectures:** Main set `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`, `gru`, `lstm`; large variants in `ARCH_NAMES_LARGE`. All CIFAR-10–safe (32×32 input).
 - **Training:** Clean regime (α_train=0.0) and noisy regime (α_train=0.05); per-batch weight noise in noisy regime; optimizer updates clean weights.
 - **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1; results merged into dataset-specific CSVs and JSON.
 - **Plots:** `scripts/plot_robustness_curves.py` produces robustness decay curves and drop@0.1 bar chart.
@@ -27,7 +27,7 @@ Requires: `torch>=2.0.0`, `torchvision>=0.15.0`, `matplotlib>=3.5.0`. Data is do
 Trains every architecture in both regimes over 10 seeds (0–9), then runs the robustness sweep and writes results. Checkpoints and results are under `checkpoints/cifar10/` and `results/cifar10/`.
 
 ```bash
-# Default: CIFAR-10, core architectures (cnn, mlp, plainnet20, resnet20, mobilenet_v2, vit_lite) × 2 regimes × 10 seeds
+# Default: CIFAR-10, main architectures (ARCH_NAMES) × 2 regimes × 10 seeds
 python run_experiments.py
 ```
 
@@ -40,17 +40,17 @@ python run_experiments.py
 Pass architecture names as positional arguments. If none are given, the full core set is run.
 
 ```bash
-# Core set only (faster)
+# Subset of main architectures (faster)
 python run_experiments.py cnn mlp plainnet20 resnet20
 
-# With ViT and MobileNet
-python run_experiments.py cnn mlp resnet20 mobilenet_v2 vit_lite
+# With ViT, MobileNet, GRU, LSTM
+python run_experiments.py cnn mlp resnet20 mobilenet_v2 vit_lite gru lstm
 
-# All core (default)
+# All main architectures (default)
 python run_experiments.py
 ```
 
-**Core architecture names:** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`. Optional and extended: see “Architecture variants (base vs large)” below.
+**Main architecture names:** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`, `gru`, `lstm`. Large variants: see “Architecture variants (main vs large)” below.
 
 ### Plot figures
 
@@ -64,7 +64,7 @@ Outputs: `results/cifar10/robustness_curves.png`, `results/cifar10/drop_at_01_ba
 
 ### Quick sanity check (1 epoch, MLP only)
 
-Trains `mlp_small` for 1 epoch in both regimes, evaluates at α_test ∈ {0, 0.1}, and checks that the noisy-trained model has smaller or similar accuracy drop.
+Trains `mlp` (base) for 1 epoch in both regimes, evaluates at α_test ∈ {0, 0.1}, and checks that the noisy-trained model has smaller or similar accuracy drop.
 
 ```bash
 python sanity_check.py
@@ -116,23 +116,21 @@ Reproducibility: `set_seed()` (in `train.py`) sets PyTorch and CUDA seeds and us
 
 ### Neural architectures
 
-- **Defined in:** `models/` package (`models/__init__.py`, `resnet_cifar.py`, `vit_lite.py`, etc.).
+- **Defined in:** `models/` package (`models/__init__.py`, `cnn.py`, `mlp.py`, `resnet.py`, `mobilenet_v2.py`, `vit_lite.py`, `gru.py`, `lstm.py`).
 - **Factory:** `get_model(name, num_classes=10)`.
-- **Core names:** `ARCH_NAMES = ["cnn", "mlp", "plainnet20", "resnet20", "mobilenet_v2", "vit_lite"]`.
+- **Main names:** `ARCH_NAMES = ["cnn", "mlp", "plainnet20", "resnet20", "mobilenet_v2", "vit_lite", "gru", "lstm"]`.
+- **Large variants:** `ARCH_NAMES_LARGE` (e.g. `cnn_large`, `mlp_large`, `gru_large`, `lstm_large`, `resnet32`, `resnet56`, `plainnet56`, `vit_lite_large`, `mobilenet_v2_large`). All names: `ALL_ARCH_NAMES = ARCH_NAMES + ARCH_NAMES_LARGE`.
 - **Resize:** Centralized in `models.ARCH_INPUT_RESIZE` (default 32 for CIFAR); used by `run_experiments.py` for loaders.
 
-#### Architecture variants (base vs large)
+#### Architecture variants (main vs large)
 
 A **single shared training recipe** (optimizer, scheduler, epochs) is used for all architectures so that robustness differences are attributable to **architecture and weight noise**, not per-model hyperparameters.
 
-- **Thesis core (base):** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite` — default capacity for comparability.
-- **Extended capacity:** stronger or deeper variants for testing capacity effects on weight-noise sensitivity:
-  - `cnn_large` (C=128), `mlp_large` (2048×2048×1024, LayerNorm+Dropout), `mobilenet_v2_large` (width_mult=1.4), `vit_lite_large` (embed_dim=384, depth=12), `plainnet56`, `resnet56`, `row_gru_large`, `row_lstm_large`.
+- **Main (default):** `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`, `gru`, `lstm` — default capacity for comparability.
+- **Large variants:** `ARCH_NAMES_LARGE` — stronger or deeper variants: `cnn_large` (C=128), `mlp_large` (2048×2048×1024, LayerNorm+Dropout), `mobilenet_v2_large` (width_mult=1.4), `vit_lite_large` (embed_dim=384, depth=12), `plainnet56`, `resnet32`, `resnet56`, `gru_large`, `lstm_large`.
 - **PlainNet vs ResNet:** PlainNet uses the same conv depth and channel widths as the corresponding ResNet but has no skip connections (different computation graph); use for topology/ablation comparisons.
 
-Optional / backward compat: `mlp_small`, `mlp_small_ln`, `mlp_medium`, `resnet32`, `resnet18`, `row_gru`, `row_lstm`. For thesis clarity: `mlp_small` is legacy (no LayerNorm/dropout); `mlp_small_ln` gives the same small capacity with LayerNorm+dropout so comparisons stay controlled.
-
-To **add an architecture:** implement the model (input `(B, 3, 32, 32)` or documented resize, output `(B, num_classes)`), add a branch in `get_model()` in `models/__init__.py`, and append to `ARCH_NAMES` or `ARCH_NAMES_OPTIONAL`. Add an entry to `ARCH_INPUT_RESIZE` if the input size is not 32.
+To **add an architecture:** implement the model (input `(B, 3, 32, 32)` or documented resize, output `(B, num_classes)`), add a branch in `get_model()` in `models/__init__.py`, and append to `ARCH_NAMES` or `ARCH_NAMES_LARGE`. Add an entry to `ARCH_INPUT_RESIZE` if the input size is not 32.
 
 ---
 
