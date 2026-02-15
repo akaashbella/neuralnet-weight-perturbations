@@ -1,5 +1,6 @@
 """
 Generate plots from sweep/summary CSV outputs.
+Assumes sweep.csv has headers: architecture, regime, seed, dataset, alpha_train, alpha_test, acc, loss.
 Run from repo root: python scripts/viz_sweep.py --dataset cifar10
 Uses matplotlib only; saves to results/figures/<dataset>/.
 """
@@ -8,6 +9,7 @@ import argparse
 import csv
 import os
 import sys
+from collections import defaultdict
 
 import numpy as np
 
@@ -16,22 +18,12 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config
 
-# Candidate column names for accuracy (first match wins)
-ACC_COL_CANDIDATES = ["acc", "acc_mean", "accuracy", "top1", "test_acc"]
+EXPECTED_SWEEP_HEADERS = ["architecture", "regime", "seed", "dataset", "alpha_train", "alpha_test", "acc", "loss"]
+ALPHA0_TOL = 1e-12
 
 
-def _pick_acc_column(columns, metric_hint="acc"):
-    """Return first column name that exists and is usable for accuracy. Warn which one is used."""
-    for c in ACC_COL_CANDIDATES:
-        if c in columns:
-            if c != metric_hint:
-                print(f"Using accuracy column: '{c}' (requested '{metric_hint}' not found)", file=sys.stderr)
-            return c
-    return None
-
-
-def load_sweep(results_dir, alpha_col="alpha_test", metric="acc"):
-    """Load sweep.csv; return list of dicts with float alpha and chosen acc column. Empty if file missing."""
+def load_sweep(results_dir):
+    """Load sweep.csv with exact headers; return list of dicts with float alpha_test, acc, loss. Empty if file or columns missing."""
     path = os.path.join(results_dir, "sweep.csv")
     if not os.path.isfile(path):
         return []
@@ -39,19 +31,18 @@ def load_sweep(results_dir, alpha_col="alpha_test", metric="acc"):
     with open(path, newline="") as f:
         reader = csv.DictReader(f)
         colnames = reader.fieldnames or []
-        acc_col = _pick_acc_column(colnames, metric)
-        if acc_col is None:
-            print(f"No accuracy column found in sweep.csv (tried {ACC_COL_CANDIDATES}). Skipping sweep.", file=sys.stderr)
+        missing = [h for h in EXPECTED_SWEEP_HEADERS if h not in colnames]
+        if missing:
+            print(f"sweep.csv missing columns: {missing}. Expected: {EXPECTED_SWEEP_HEADERS}. Skipping.", file=sys.stderr)
             return []
         for r in reader:
             try:
-                r[alpha_col] = float(r.get(alpha_col, r.get("alpha_test", 0)))
-                r["_acc"] = float(r.get(acc_col, 0))
+                r["alpha_test"] = float(r["alpha_test"])
+                r["acc"] = float(r["acc"])
+                r["loss"] = float(r["loss"])
             except (TypeError, ValueError):
                 continue
-            r["seed"] = int(r.get("seed", 0))
-            r["architecture"] = r.get("architecture", "")
-            r["regime"] = r.get("regime", "")
+            r["seed"] = int(r["seed"])
             rows.append(r)
     return rows
 
@@ -76,8 +67,8 @@ def load_summary(results_dir):
     return rows
 
 
-def filter_rows(rows, regimes, architectures, alpha_col="alpha_test", acc_key="_acc"):
-    """Filter by regime list and optional architecture list. regimes/comma list; architectures/comma list or empty = all."""
+def filter_rows(rows, regimes, architectures):
+    """Filter by regime list and optional architecture list."""
     regime_set = {s.strip() for s in regimes.split(",") if s.strip()}
     arch_set = {s.strip() for s in architectures.split(",") if s.strip()} if architectures else None
     out = []
@@ -90,78 +81,124 @@ def filter_rows(rows, regimes, architectures, alpha_col="alpha_test", acc_key="_
     return out
 
 
-def aggregate_sweep(sweep_rows, alpha_col="alpha_test", acc_key="_acc"):
+def aggregate_sweep(sweep_rows):
     """
-    Aggregate by (architecture, regime, alpha_test): mean and std across seeds.
-    Returns: dict keyed by (arch, regime) -> {"alphas": sorted list, "mean": array, "std": array or None}.
+    Group by (architecture, regime, alpha_test); compute mean and std over seeds for acc and loss.
+    Returns: dict (arch, regime) -> {"alphas": list, "acc_mean": array, "acc_std": array or None, "loss_mean": array, "loss_std": array or None}.
     """
-    from collections import defaultdict
-    # (arch, regime) -> alpha -> list of acc values (one per seed/sample)
-    by_key = defaultdict(lambda: defaultdict(list))
+    by_key = defaultdict(lambda: defaultdict(lambda: {"acc": [], "loss": []}))
     for r in sweep_rows:
         key = (r["architecture"], r["regime"])
-        alpha = r[alpha_col]
-        by_key[key][alpha].append(r[acc_key])
+        alpha = r["alpha_test"]
+        by_key[key][alpha]["acc"].append(r["acc"])
+        by_key[key][alpha]["loss"].append(r["loss"])
 
     out = {}
     for key, alpha_to_vals in by_key.items():
         alphas = sorted(alpha_to_vals.keys())
-        means = []
-        stds = []
+        acc_means, acc_stds, loss_means, loss_stds = [], [], [], []
         for a in alphas:
-            vals = alpha_to_vals[a]
-            means.append(np.mean(vals))
-            stds.append(np.std(vals) if len(vals) > 1 else 0.0)
+            acc_vals = alpha_to_vals[a]["acc"]
+            loss_vals = alpha_to_vals[a]["loss"]
+            acc_means.append(np.mean(acc_vals))
+            acc_stds.append(np.std(acc_vals) if len(acc_vals) > 1 else 0.0)
+            loss_means.append(np.mean(loss_vals))
+            loss_stds.append(np.std(loss_vals) if len(loss_vals) > 1 else 0.0)
         out[key] = {
             "alphas": alphas,
-            "mean": np.array(means),
-            "std": np.array(stds) if any(s > 0 for s in stds) else None,
+            "acc_mean": np.array(acc_means),
+            "acc_std": np.array(acc_stds) if any(s > 0 for s in acc_stds) else None,
+            "loss_mean": np.array(loss_means),
+            "loss_std": np.array(loss_stds) if any(s > 0 for s in loss_stds) else None,
         }
     return out
 
 
-def compute_auc(alphas, mean_acc):
-    """Trapezoidal AUC over (alphas, mean_acc)."""
+def global_alpha_set(aggregated):
+    """Return sorted set of all alpha_test values across (arch, regime)."""
+    all_alphas = set()
+    for agg in aggregated.values():
+        all_alphas.update(agg["alphas"])
+    return sorted(all_alphas)
+
+
+def baseline_alpha_index(alphas, tol=ALPHA0_TOL):
+    """Index of alpha_test closest to 0 (within tolerance or absolute minimum)."""
+    if not alphas:
+        return None
+    idx = np.argmin(np.abs(np.asarray(alphas)))
+    return idx
+
+
+def compute_auc(alphas, mean_vals):
+    """Trapezoidal AUC over (alphas, mean_vals)."""
     if len(alphas) < 2:
         return 0.0
-    return float(np.trapz(mean_acc, alphas))
+    return float(np.trapz(mean_vals, alphas))
 
 
-def compute_initial_drop(agg):
-    """Drop from alpha=0 to smallest positive alpha. Returns (acc0, drop) or (nan, nan) if no alpha=0."""
+def warn_missing_alpha(aggregated, global_alphas):
+    """Warn for each (arch, regime) that is missing alpha_test values vs global set."""
+    global_set = set(global_alphas)
+    for (arch, reg), agg in sorted(aggregated.items()):
+        have = set(agg["alphas"])
+        if have != global_set:
+            missing = global_set - have
+            print(f"Warning: ({arch}, {reg}) missing alpha_test values {sorted(missing)}; AUC/sensitivity over available range only.", file=sys.stderr)
+
+
+def initial_sensitivity(agg, metric):
+    """
+    For acc: acc(alpha0) - acc(min positive alpha). For loss: loss(min positive alpha) - loss(alpha0).
+    Returns (baseline_value, sensitivity). baseline_value is acc0 or loss0; sensitivity is the drop or rise.
+    """
     alphas = agg["alphas"]
-    mean = agg["mean"]
-    if not alphas or alphas[0] != 0:
+    if not alphas:
         return float("nan"), float("nan")
-    acc0 = mean[0]
-    positive = [a for a in alphas if a > 0]
-    if not positive:
-        return acc0, 0.0
-    min_pos = min(positive)
-    idx = alphas.index(min_pos)
-    drop = acc0 - mean[idx]
-    return acc0, drop
+    i0 = baseline_alpha_index(alphas)
+    if i0 is None:
+        return float("nan"), float("nan")
+    if metric == "acc":
+        mean = agg["acc_mean"]
+        baseline = mean[i0]
+        positive_idx = [i for i, a in enumerate(alphas) if a > alphas[i0] + ALPHA0_TOL]
+        if not positive_idx:
+            return baseline, 0.0
+        j = min(positive_idx, key=lambda i: alphas[i])
+        return baseline, baseline - mean[j]
+    else:
+        mean = agg["loss_mean"]
+        baseline = mean[i0]
+        positive_idx = [i for i, a in enumerate(alphas) if a > alphas[i0] + ALPHA0_TOL]
+        if not positive_idx:
+            return baseline, 0.0
+        j = min(positive_idx, key=lambda i: alphas[i])
+        return baseline, mean[j] - baseline
 
 
-def plot_robustness_curves(aggregated, regime, out_path, dataset, log_x=False):
-    """One figure: accuracy vs alpha_test, one line per architecture, optional std band."""
+def plot_robustness_curves(aggregated, regime, metric, out_path, dataset, log_x=False):
+    """One figure: metric vs alpha_test, one line per architecture, optional std band."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+
+    mean_key = f"{metric}_mean"
+    std_key = f"{metric}_std"
+    ylabel = "Accuracy" if metric == "acc" else "Loss"
 
     fig, ax = plt.subplots()
     for (arch, reg), agg in sorted(aggregated.items()):
         if reg != regime:
             continue
         alphas = agg["alphas"]
-        mean = agg["mean"]
-        std = agg["std"]
+        mean = agg[mean_key]
+        std = agg[std_key]
         ax.plot(alphas, mean, label=arch)
         if std is not None and np.any(std > 0):
             ax.fill_between(alphas, mean - std, mean + std, alpha=0.25)
     ax.set_xlabel("alpha_test")
-    ax.set_ylabel("Accuracy")
-    ax.set_title(f"{dataset} - {regime}: robustness curves")
+    ax.set_ylabel(ylabel)
+    ax.set_title(f"{dataset} - {regime}: robustness ({metric})")
     if log_x:
         ax.set_xscale("log")
     ax.legend(loc="best", fontsize=8)
@@ -171,30 +208,40 @@ def plot_robustness_curves(aggregated, regime, out_path, dataset, log_x=False):
     plt.close()
 
 
-def plot_degradation_curves(aggregated, regime, out_path, dataset, log_x=False):
-    """Degradation = acc(0) - acc(alpha). One line per architecture."""
+def plot_degradation_curves(aggregated, regime, metric, out_path, dataset, log_x=False):
+    """Acc: y = acc(alpha0) - acc(alpha). Loss: y = loss(alpha) - loss(alpha0)."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+
+    mean_key = f"{metric}_mean"
+    std_key = f"{metric}_std"
+    if metric == "acc":
+        ylabel = "Degradation (acc(alpha0) - acc(alpha))"
+    else:
+        ylabel = "Degradation (loss(alpha) - loss(alpha0))"
 
     fig, ax = plt.subplots()
     for (arch, reg), agg in sorted(aggregated.items()):
         if reg != regime:
             continue
         alphas = agg["alphas"]
-        mean = agg["mean"]
-        if not alphas or alphas[0] != 0:
+        mean = agg[mean_key]
+        i0 = baseline_alpha_index(alphas)
+        if i0 is None:
             continue
-        acc0 = mean[0]
-        degradation = acc0 - mean
-        std = agg["std"]
+        baseline = mean[i0]
+        if metric == "acc":
+            degradation = baseline - mean
+        else:
+            degradation = mean - baseline
+        std = agg[std_key]
         ax.plot(alphas, degradation, label=arch)
         if std is not None and np.any(std > 0):
-            # std of (acc0 - acc) = std of acc
             ax.fill_between(alphas, degradation - std, degradation + std, alpha=0.25)
     ax.set_xlabel("alpha_test")
-    ax.set_ylabel("Degradation (acc(0) - acc(alpha))")
-    ax.set_title(f"{dataset} - {regime}: degradation curves")
+    ax.set_ylabel(ylabel)
+    ax.set_title(f"{dataset} - {regime}: degradation ({metric})")
     if log_x:
         ax.set_xscale("log")
     ax.legend(loc="best", fontsize=8)
@@ -204,24 +251,21 @@ def plot_degradation_curves(aggregated, regime, out_path, dataset, log_x=False):
     plt.close()
 
 
-def plot_auc_bars(aggregated, out_path, dataset, regimes_order=None):
-    """Grouped bars: per architecture, one group per regime (clean vs noisy), AUC value."""
+def plot_auc_bars(aggregated, metric, out_path, dataset, regimes_order):
+    """Grouped bars: AUC (trapezoidal on mean) per architecture and regime."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    import numpy as np
 
+    mean_key = f"{metric}_mean"
     regimes_order = regimes_order or ["clean", "noisy"]
     archs = sorted({k[0] for k in aggregated.keys()})
     if not archs:
-        plt.savefig(out_path, dpi=150)
-        plt.close()
         return
 
-    # (arch, regime) -> auc
     auc_map = {}
     for (arch, reg), agg in aggregated.items():
-        auc_map[(arch, reg)] = compute_auc(agg["alphas"], agg["mean"])
+        auc_map[(arch, reg)] = compute_auc(agg["alphas"], agg[mean_key])
 
     x = np.arange(len(archs))
     width = 0.35
@@ -230,8 +274,8 @@ def plot_auc_bars(aggregated, out_path, dataset, regimes_order=None):
         vals = [auc_map.get((a, reg), float("nan")) for a in archs]
         offset = (i - 0.5) * width
         ax.bar(x + offset, vals, width, label=reg)
-    ax.set_ylabel("Robustness AUC")
-    ax.set_title(f"{dataset}: AUC by architecture and regime")
+    ax.set_ylabel(f"Robustness AUC ({metric})")
+    ax.set_title(f"{dataset}: AUC by architecture and regime ({metric})")
     ax.set_xticks(x)
     ax.set_xticklabels(archs, rotation=45, ha="right")
     ax.legend()
@@ -241,34 +285,31 @@ def plot_auc_bars(aggregated, out_path, dataset, regimes_order=None):
     plt.close()
 
 
-def plot_initial_drop_bars(aggregated, out_path, dataset, regimes_order=None):
-    """Grouped bars: initial drop (acc(0) - acc(min positive alpha)) by architecture and regime."""
+def plot_initial_sensitivity_bars(aggregated, metric, out_path, dataset, regimes_order=None):
+    """Grouped bars: initial sensitivity (acc drop or loss rise from alpha0 to min positive alpha)."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    import numpy as np
 
     regimes_order = regimes_order or ["clean", "noisy"]
     archs = sorted({k[0] for k in aggregated.keys()})
     if not archs:
-        plt.savefig(out_path, dpi=150)
-        plt.close()
         return
 
-    drop_map = {}
+    sens_map = {}
     for (arch, reg), agg in aggregated.items():
-        _, drop = compute_initial_drop(agg)
-        drop_map[(arch, reg)] = drop
+        _, sens = initial_sensitivity(agg, metric)
+        sens_map[(arch, reg)] = sens
 
     x = np.arange(len(archs))
     width = 0.35
     fig, ax = plt.subplots()
     for i, reg in enumerate(regimes_order):
-        vals = [drop_map.get((a, reg), float("nan")) for a in archs]
+        vals = [sens_map.get((a, reg), float("nan")) for a in archs]
         offset = (i - 0.5) * width
         ax.bar(x + offset, vals, width, label=reg)
-    ax.set_ylabel("Initial drop (acc(0) - acc(min alpha>0))")
-    ax.set_title(f"{dataset}: initial drop by architecture and regime")
+    ax.set_ylabel(f"Initial sensitivity ({metric})")
+    ax.set_title(f"{dataset}: initial sensitivity by architecture and regime ({metric})")
     ax.set_xticks(x)
     ax.set_xticklabels(archs, rotation=45, ha="right")
     ax.legend()
@@ -279,14 +320,12 @@ def plot_initial_drop_bars(aggregated, out_path, dataset, regimes_order=None):
 
 
 def plot_drop_at_01_from_summary(summary_rows, out_path, dataset, regimes_order=None, architectures_filter=None):
-    """Bar or scatter of drop_at_01 from summary.csv across architectures and regimes."""
+    """Bar chart of drop_at_01 from summary.csv."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    import numpy as np
 
     regimes_order = regimes_order or ["clean", "noisy"]
-    from collections import defaultdict
     by_key = defaultdict(list)
     for r in summary_rows:
         key = (r["architecture"], r["regime"])
@@ -317,62 +356,36 @@ def plot_drop_at_01_from_summary(summary_rows, out_path, dataset, regimes_order=
 
 
 def print_table(aggregated, regimes_order=None):
-    """Print text table: architecture, regime, acc0, auc, initial_drop."""
+    """Print text table: architecture, regime, acc0, loss0, auc_acc, auc_loss, initial_sens_acc, initial_sens_loss."""
     regimes_order = regimes_order or ["clean", "noisy"]
     rows = []
     for (arch, reg), agg in aggregated.items():
-        acc0, initial_drop = compute_initial_drop(agg)
-        auc = compute_auc(agg["alphas"], agg["mean"])
-        rows.append((arch, reg, acc0, auc, initial_drop))
+        acc0, _ = initial_sensitivity(agg, "acc")
+        loss0, _ = initial_sensitivity(agg, "loss")
+        _, sens_acc = initial_sensitivity(agg, "acc")
+        _, sens_loss = initial_sensitivity(agg, "loss")
+        auc_acc = compute_auc(agg["alphas"], agg["acc_mean"])
+        auc_loss = compute_auc(agg["alphas"], agg["loss_mean"])
+        rows.append((arch, reg, acc0, loss0, auc_acc, auc_loss, sens_acc, sens_loss))
     rows.sort(key=lambda r: (r[0], r[1]))
 
-    fmt = "{:14} {:8} {:8} {:10} {:10}"
-    print(fmt.format("architecture", "regime", "acc0", "auc", "initial_drop"))
-    print("-" * 52)
-    for arch, reg, acc0, auc, drop in rows:
-        print(fmt.format(arch, reg, f"{acc0:.4f}", f"{auc:.4f}", f"{drop:.4f}"))
+    fmt = "{:12} {:8} {:8} {:8} {:10} {:10} {:12} {:12}"
+    print(fmt.format("architecture", "regime", "acc0", "loss0", "auc_acc", "auc_loss", "sens_acc", "sens_loss"))
+    print("-" * 82)
+    for arch, reg, acc0, loss0, auc_acc, auc_loss, sens_acc, sens_loss in rows:
+        print(fmt.format(arch, reg, f"{acc0:.4f}", f"{loss0:.4f}", f"{auc_acc:.4f}", f"{auc_loss:.4f}", f"{sens_acc:.4f}", f"{sens_loss:.4f}"))
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate thesis plots from sweep/summary CSVs.",
+        description="Generate plots from sweep.csv (exact headers: architecture, regime, seed, dataset, alpha_train, alpha_test, acc, loss).",
     )
     parser.add_argument("--dataset", required=True, help="Dataset subdir under results (e.g. cifar10).")
-    parser.add_argument(
-        "--regimes",
-        default="clean,noisy",
-        help="Comma-separated regimes to include (default: clean,noisy).",
-    )
-    parser.add_argument(
-        "--architectures",
-        default="",
-        help="Optional comma-separated architecture filter; empty = all.",
-    )
-    parser.add_argument(
-        "--metric",
-        default="acc",
-        help="Accuracy column hint (default: acc). First match from acc, acc_mean, accuracy, top1, test_acc.",
-    )
-    parser.add_argument(
-        "--alpha_col",
-        default="alpha_test",
-        help="Column name for perturbation strength in sweep.csv (default: alpha_test).",
-    )
-    parser.add_argument(
-        "--out_dir",
-        default="",
-        help="Output directory; if empty, use ./results/figures/<dataset>/.",
-    )
-    parser.add_argument(
-        "--show",
-        action="store_true",
-        help="Call plt.show() after saving (for interactive display).",
-    )
-    parser.add_argument(
-        "--log_x",
-        action="store_true",
-        help="Use log scale for alpha_test on curve plots.",
-    )
+    parser.add_argument("--regimes", default="clean,noisy", help="Comma-separated regimes (default: clean,noisy).")
+    parser.add_argument("--architectures", default="", help="Optional comma-separated architecture filter; empty = all.")
+    parser.add_argument("--out_dir", default="", help="Output directory; if empty, use ./results/figures/<dataset>/.")
+    parser.add_argument("--show", action="store_true", help="Call plt.show() after saving.")
+    parser.add_argument("--log_x", action="store_true", help="Use log scale for alpha_test on curve plots.")
     args = parser.parse_args()
 
     results_dir = os.path.join(config.RESULTS_DIR, args.dataset)
@@ -383,19 +396,13 @@ def main():
         print(f"Results dir not found: {results_dir}", file=sys.stderr)
         return 1
 
-    sweep_rows = load_sweep(results_dir, alpha_col=args.alpha_col, metric=args.metric)
+    sweep_rows = load_sweep(results_dir)
     summary_rows = load_summary(results_dir)
 
     if not sweep_rows:
-        print("No sweep.csv or no usable accuracy column. Generate what we can from summary only.", file=sys.stderr)
+        print("No sweep.csv or missing expected columns. Generate what we can from summary only.", file=sys.stderr)
 
-    sweep_rows = filter_rows(
-        sweep_rows,
-        args.regimes,
-        args.architectures,
-        alpha_col=args.alpha_col,
-        acc_key="_acc",
-    )
+    sweep_rows = filter_rows(sweep_rows, args.regimes, args.architectures)
     summary_rows = [r for r in summary_rows if r.get("regime") in {s.strip() for s in args.regimes.split(",")}]
     if args.architectures:
         arch_set = {s.strip() for s in args.architectures.split(",")}
@@ -405,41 +412,44 @@ def main():
     generated_any = False
 
     if sweep_rows:
-        aggregated = aggregate_sweep(sweep_rows, alpha_col=args.alpha_col, acc_key="_acc")
+        aggregated = aggregate_sweep(sweep_rows)
+        global_alphas = global_alpha_set(aggregated)
+        warn_missing_alpha(aggregated, global_alphas)
         print_table(aggregated, regimes_order=regimes_list)
 
         for regime in regimes_list:
             if not any(k[1] == regime for k in aggregated):
                 continue
             plot_robustness_curves(
-                aggregated,
-                regime,
-                os.path.join(out_dir, f"robustness_curves_{regime}.png"),
-                args.dataset,
-                log_x=args.log_x,
+                aggregated, regime, "acc",
+                os.path.join(out_dir, f"robustness_curves_acc_{regime}.png"),
+                args.dataset, log_x=args.log_x,
+            )
+            plot_robustness_curves(
+                aggregated, regime, "loss",
+                os.path.join(out_dir, f"robustness_curves_loss_{regime}.png"),
+                args.dataset, log_x=args.log_x,
             )
             plot_degradation_curves(
-                aggregated,
-                regime,
-                os.path.join(out_dir, f"degradation_curves_{regime}.png"),
-                args.dataset,
-                log_x=args.log_x,
+                aggregated, regime, "acc",
+                os.path.join(out_dir, f"degradation_curves_acc_{regime}.png"),
+                args.dataset, log_x=args.log_x,
+            )
+            plot_degradation_curves(
+                aggregated, regime, "loss",
+                os.path.join(out_dir, f"degradation_curves_loss_{regime}.png"),
+                args.dataset, log_x=args.log_x,
             )
             generated_any = True
 
-        plot_auc_bars(aggregated, os.path.join(out_dir, "auc_by_arch.png"), args.dataset, regimes_order=regimes_list)
-        plot_initial_drop_bars(
-            aggregated,
-            os.path.join(out_dir, "initial_drop.png"),
-            args.dataset,
-            regimes_order=regimes_list,
-        )
+        plot_auc_bars(aggregated, "acc", os.path.join(out_dir, "auc_by_arch_acc.png"), args.dataset, regimes_list)
+        plot_auc_bars(aggregated, "loss", os.path.join(out_dir, "auc_by_arch_loss.png"), args.dataset, regimes_list)
+        plot_initial_sensitivity_bars(aggregated, "acc", os.path.join(out_dir, "initial_sensitivity_acc.png"), args.dataset, regimes_list)
+        plot_initial_sensitivity_bars(aggregated, "loss", os.path.join(out_dir, "initial_sensitivity_loss.png"), args.dataset, regimes_list)
         generated_any = True
 
     if summary_rows and any("drop_at_01" in r for r in summary_rows):
-        arch_filter = None
-        if args.architectures:
-            arch_filter = {s.strip() for s in args.architectures.split(",")}
+        arch_filter = {s.strip() for s in args.architectures.split(",")} if args.architectures else None
         plot_drop_at_01_from_summary(
             summary_rows,
             os.path.join(out_dir, "drop_at_01.png"),
@@ -454,7 +464,7 @@ def main():
         plt.show()
 
     if not generated_any:
-        print("No plots generated. Ensure sweep.csv (and optionally summary.csv) exist and contain data.", file=sys.stderr)
+        print("No plots generated. Ensure sweep.csv exists with expected columns and contains data.", file=sys.stderr)
         return 1
 
     print(f"Plots saved to {out_dir}")

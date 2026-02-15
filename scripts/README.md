@@ -24,28 +24,30 @@ python scripts/viz_sweep.py --dataset cifar10 [options]
 
 - `--regimes` - Comma-separated regimes (default: `clean,noisy`).
 - `--architectures` - Optional comma-separated architecture filter; empty = all.
-- `--metric` - Accuracy column hint (default: `acc`). Script picks first match from `acc`, `acc_mean`, `accuracy`, `top1`, `test_acc`.
-- `--alpha_col` - Column name for perturbation strength in sweep.csv (default: `alpha_test`).
 - `--out_dir` - Output directory; if empty, uses `./results/figures/<dataset>/`.
 - `--show` - Call `plt.show()` after saving (interactive).
 - `--log_x` - Use log scale for alpha_test on curve plots.
 
 **Inputs**
 
-- Reads `./results/<dataset>/sweep.csv` if present (expected columns best-effort: architecture, regime, seed, alpha_test, acc or similar).
+- Reads `./results/<dataset>/sweep.csv` with exact headers: `architecture`, `regime`, `seed`, `dataset`, `alpha_train`, `alpha_test`, `acc`, `loss`. Uses `acc` and `loss` directly (no column guessing).
 - Reads `./results/<dataset>/summary.csv` if present (optional; used for drop_at_01 plot).
 
-If a file is missing, the script prints a clear message and still generates what it can.
+If a file is missing or sweep.csv has wrong columns, the script prints a clear message and still generates what it can.
 
 **Outputs (saved to `./results/figures/<dataset>/` by default)**
 
-- `robustness_curves_<regime>.png` - Accuracy vs alpha_test, one line per architecture, one figure per regime.
-- `degradation_curves_<regime>.png` - acc(0) - acc(alpha), one figure per regime.
-- `auc_by_arch.png` - Robustness AUC (trapezoidal) as grouped bars per architecture and regime.
-- `initial_drop.png` - Drop from alpha=0 to smallest positive alpha, grouped by regime.
+- `robustness_curves_acc_<regime>.png` - Accuracy vs alpha_test, one line per architecture.
+- `robustness_curves_loss_<regime>.png` - Loss vs alpha_test.
+- `degradation_curves_acc_<regime>.png` - acc(alpha0) - acc(alpha) per regime.
+- `degradation_curves_loss_<regime>.png` - loss(alpha) - loss(alpha0) per regime.
+- `auc_by_arch_acc.png` - Trapezoidal AUC of accuracy by architecture and regime.
+- `auc_by_arch_loss.png` - Trapezoidal AUC of loss by architecture and regime.
+- `initial_sensitivity_acc.png` - Initial sensitivity (acc drop from baseline to min positive alpha).
+- `initial_sensitivity_loss.png` - Initial sensitivity (loss rise from baseline to min positive alpha).
 - `drop_at_01.png` - Drop at alpha_test=0.1 from summary.csv (if available).
 
-A short text table (architecture, regime, acc0, auc, initial_drop) is printed to stdout.
+Baseline alpha0 is the alpha_test value closest to 0 (tolerance 1e-12). Aggregation: mean and std over seeds per (architecture, regime, alpha_test). A text table (architecture, regime, acc0, loss0, auc_acc, auc_loss, sens_acc, sens_loss) is printed to stdout. If an (arch, regime) is missing alpha_test values vs the global set, a warning is printed and AUC/sensitivity use the available range only.
 
 ---
 
