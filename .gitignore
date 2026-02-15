@@ -40,7 +40,6 @@ data/
 
 # Archives
 *.zip
-*.md
 
 # OS
 .DS_Store
