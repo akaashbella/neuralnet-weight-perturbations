@@ -8,7 +8,7 @@ Research prototype for studying **robustness to Gaussian weight perturbations** 
 - **Architectures:** Main set `cnn`, `mlp`, `plainnet20`, `resnet20`, `mobilenet_v2`, `vit_lite`, `gru`, `lstm`; large variants in `ARCH_NAMES_LARGE`. All CIFAR-10–safe (32×32 input).
 - **Training:** Clean regime (α_train=0.0) and noisy regime (α_train=0.05); per-batch weight noise in noisy regime; optimizer updates clean weights.
 - **Evaluation:** Robustness sweep over α_test; accuracy drop at α=0.1; results merged into dataset-specific CSVs and JSON.
-- **Plots:** `scripts/plot_robustness_curves.py` produces robustness decay curves and drop@0.1 bar chart.
+- **Plots:** `scripts/plot_robustness_curves.py` produces robustness decay curves and drop@0.1 bar chart. `scripts/viz_sweep.py` generates robustness curves, degradation curves, AUC bar chart, initial drop, and optional drop_at_01 from summary; optional `scripts/viz_loss_landscape_slice.py` produces 2D loss landscape slices (expensive). See `scripts/README.md` for usage and output paths. Figure outputs go to `./results/figures/<dataset>/` by default.
 
 ## Setup
 
@@ -61,6 +61,14 @@ python scripts/plot_robustness_curves.py --dataset cifar10
 ```
 
 Outputs: `results/cifar10/robustness_curves.png`, `results/cifar10/drop_at_01_bars.png`.
+
+For plots (robustness curves per regime, degradation, AUC bar chart, initial drop, optional drop_at_01 from summary):
+
+```bash
+python scripts/viz_sweep.py --dataset cifar10
+```
+
+Outputs: `results/figures/cifar10/` (robustness_curves_*.png, degradation_curves_*.png, auc_by_arch.png, initial_drop.png, drop_at_01.png if summary exists). Optional loss landscape slice (expensive): `python scripts/viz_loss_landscape_slice.py --dataset cifar10 --arch cnn_large --regime clean --seed 0 --grid 31 --span 0.5 --batch_limit 10`; see `scripts/README.md`.
 
 ### Quick sanity check (1 epoch, MLP only)
 
