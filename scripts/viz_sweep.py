@@ -22,11 +22,8 @@ EXPECTED_SWEEP_HEADERS = ["architecture", "regime", "seed", "dataset", "alpha_tr
 ALPHA0_TOL = 1e-12
 
 
-def load_sweep(results_dir):
-    """Load sweep.csv with exact headers; return list of dicts with float alpha_test, acc, loss. Empty if file or columns missing."""
-    path = os.path.join(results_dir, "sweep.csv")
-    if not os.path.isfile(path):
-        return []
+def _sweep_rows_from_csv(path):
+    """Parse sweep CSV with exact headers; return list of dicts or empty if columns missing."""
     rows = []
     with open(path, newline="") as f:
         reader = csv.DictReader(f)
@@ -45,6 +42,44 @@ def load_sweep(results_dir):
             r["seed"] = int(r["seed"])
             rows.append(r)
     return rows
+
+
+def load_sweep(results_dir):
+    """Load sweep from sweep.csv; fallback to results.json 'sweep' if CSV missing. Return list of dicts with float alpha_test, acc, loss."""
+    path = os.path.join(results_dir, "sweep.csv")
+    if os.path.isfile(path):
+        return _sweep_rows_from_csv(path)
+    # Fallback: results.json
+    json_path = os.path.join(results_dir, "results.json")
+    if not os.path.isfile(json_path):
+        return []
+    try:
+        import json
+        with open(json_path) as f:
+            data = json.load(f)
+        sweep = data.get("sweep")
+        if not isinstance(sweep, list):
+            return []
+        rows = []
+        for r in sweep:
+            try:
+                r = dict(r)
+                r["alpha_test"] = float(r.get("alpha_test", 0))
+                r["acc"] = float(r.get("acc", 0))
+                r["loss"] = float(r.get("loss", 0))
+                r["seed"] = int(r.get("seed", 0))
+                for k in ["architecture", "regime", "dataset"]:
+                    if k in r and not isinstance(r[k], str):
+                        r[k] = str(r[k])
+                rows.append(r)
+            except (TypeError, ValueError, KeyError):
+                continue
+        if rows:
+            print("Loaded sweep from results.json (sweep.csv not found).", file=sys.stderr)
+        return rows
+    except Exception as e:
+        print(f"Failed to load results.json: {e}", file=sys.stderr)
+        return []
 
 
 def load_summary(results_dir):
@@ -83,33 +118,59 @@ def filter_rows(rows, regimes, architectures):
 
 def aggregate_sweep(sweep_rows):
     """
-    Group by (architecture, regime, alpha_test); compute mean and std over seeds for acc and loss.
-    Returns: dict (arch, regime) -> {"alphas": list, "acc_mean": array, "acc_std": array or None, "loss_mean": array, "loss_std": array or None}.
+    Build per-seed curves then aggregate. Robustness: mean and std over seeds at each alpha.
+    Degradation: per seed deg(alpha) = acc(alpha0) - acc(alpha) or loss(alpha) - loss(alpha0); then mean and std over seeds.
+    Returns: dict (arch, regime) -> alphas, acc_mean, acc_std, loss_mean, loss_std, acc_deg_mean, acc_deg_std, loss_deg_mean, loss_deg_std.
     """
-    by_key = defaultdict(lambda: defaultdict(lambda: {"acc": [], "loss": []}))
+    # (arch, regime, seed) -> {alpha: (acc, loss)}
+    curves = defaultdict(dict)
     for r in sweep_rows:
-        key = (r["architecture"], r["regime"])
+        key = (r["architecture"], r["regime"], r["seed"])
         alpha = r["alpha_test"]
-        by_key[key][alpha]["acc"].append(r["acc"])
-        by_key[key][alpha]["loss"].append(r["loss"])
+        curves[key][alpha] = (r["acc"], r["loss"])
 
     out = {}
-    for key, alpha_to_vals in by_key.items():
-        alphas = sorted(alpha_to_vals.keys())
+    # Group by (arch, regime)
+    keys_ar = defaultdict(set)
+    for (arch, reg, seed) in curves:
+        keys_ar[(arch, reg)].add(seed)
+    for (arch, reg), seeds in keys_ar.items():
+        seeds = sorted(seeds)
+        global_alphas = sorted(set().union(*(set(curves[(arch, reg, s)].keys()) for s in seeds)))
+        if not global_alphas:
+            continue
+        alpha0 = min(global_alphas, key=lambda a: abs(a))
+        i0 = global_alphas.index(alpha0)
+
         acc_means, acc_stds, loss_means, loss_stds = [], [], [], []
-        for a in alphas:
-            acc_vals = alpha_to_vals[a]["acc"]
-            loss_vals = alpha_to_vals[a]["loss"]
-            acc_means.append(np.mean(acc_vals))
+        acc_deg_vals, loss_deg_vals = defaultdict(list), defaultdict(list)
+        for alpha in global_alphas:
+            acc_vals = [curves[(arch, reg, s)][alpha][0] for s in seeds if alpha in curves[(arch, reg, s)]]
+            loss_vals = [curves[(arch, reg, s)][alpha][1] for s in seeds if alpha in curves[(arch, reg, s)]]
+            acc_means.append(np.mean(acc_vals) if acc_vals else float("nan"))
             acc_stds.append(np.std(acc_vals) if len(acc_vals) > 1 else 0.0)
-            loss_means.append(np.mean(loss_vals))
+            loss_means.append(np.mean(loss_vals) if loss_vals else float("nan"))
             loss_stds.append(np.std(loss_vals) if len(loss_vals) > 1 else 0.0)
-        out[key] = {
-            "alphas": alphas,
+            for s in seeds:
+                c = curves[(arch, reg, s)]
+                if alpha0 in c and alpha in c:
+                    acc_deg_vals[alpha].append(c[alpha0][0] - c[alpha][0])
+                    loss_deg_vals[alpha].append(c[alpha][1] - c[alpha0][1])
+        acc_deg_mean = [np.mean(acc_deg_vals[a]) if acc_deg_vals[a] else float("nan") for a in global_alphas]
+        acc_deg_std = [np.std(acc_deg_vals[a]) if len(acc_deg_vals[a]) > 1 else 0.0 for a in global_alphas]
+        loss_deg_mean = [np.mean(loss_deg_vals[a]) if loss_deg_vals[a] else float("nan") for a in global_alphas]
+        loss_deg_std = [np.std(loss_deg_vals[a]) if len(loss_deg_vals[a]) > 1 else 0.0 for a in global_alphas]
+
+        out[(arch, reg)] = {
+            "alphas": global_alphas,
             "acc_mean": np.array(acc_means),
             "acc_std": np.array(acc_stds) if any(s > 0 for s in acc_stds) else None,
             "loss_mean": np.array(loss_means),
             "loss_std": np.array(loss_stds) if any(s > 0 for s in loss_stds) else None,
+            "acc_deg_mean": np.array(acc_deg_mean),
+            "acc_deg_std": np.array(acc_deg_std) if any(s > 0 for s in acc_deg_std) else None,
+            "loss_deg_mean": np.array(loss_deg_mean),
+            "loss_deg_std": np.array(loss_deg_std) if any(s > 0 for s in loss_deg_std) else None,
         }
     return out
 
@@ -123,11 +184,22 @@ def global_alpha_set(aggregated):
 
 
 def baseline_alpha_index(alphas, tol=ALPHA0_TOL):
-    """Index of alpha_test closest to 0 (within tolerance or absolute minimum)."""
+    """Index of alpha_test closest to 0 (argmin |alpha|)."""
     if not alphas:
         return None
-    idx = np.argmin(np.abs(np.asarray(alphas)))
-    return idx
+    return int(np.argmin(np.abs(np.asarray(alphas))))
+
+
+def warn_baseline_not_zero(aggregated, tol=ALPHA0_TOL):
+    """Warn once per (arch, regime) if baseline alpha is not exactly 0."""
+    for (arch, reg), agg in sorted(aggregated.items()):
+        alphas = agg["alphas"]
+        if not alphas:
+            continue
+        i0 = baseline_alpha_index(alphas)
+        alpha0_val = alphas[i0]
+        if abs(alpha0_val) > tol:
+            print(f"Warning: ({arch}, {reg}) baseline alpha_test is {alpha0_val} (closest to 0); missing alpha=0 data.", file=sys.stderr)
 
 
 def compute_auc(alphas, mean_vals):
@@ -138,7 +210,8 @@ def compute_auc(alphas, mean_vals):
 
 
 def warn_missing_alpha(aggregated, global_alphas):
-    """Warn for each (arch, regime) that is missing alpha_test values vs global set."""
+    """Print expected global alphas once; warn for each (arch, regime) missing values vs global set."""
+    print(f"Expected global alpha_test values: {global_alphas}", file=sys.stderr)
     global_set = set(global_alphas)
     for (arch, reg), agg in sorted(aggregated.items()):
         have = set(agg["alphas"])
@@ -200,7 +273,7 @@ def plot_robustness_curves(aggregated, regime, metric, out_path, dataset, log_x=
     ax.set_ylabel(ylabel)
     ax.set_title(f"{dataset} - {regime}: robustness ({metric})")
     if log_x:
-        ax.set_xscale("log")
+        ax.set_xscale("symlog", linthresh=1e-3)
     ax.legend(loc="best", fontsize=8)
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
@@ -209,13 +282,13 @@ def plot_robustness_curves(aggregated, regime, metric, out_path, dataset, log_x=
 
 
 def plot_degradation_curves(aggregated, regime, metric, out_path, dataset, log_x=False):
-    """Acc: y = acc(alpha0) - acc(alpha). Loss: y = loss(alpha) - loss(alpha0)."""
+    """Degradation computed per seed then mean/std. Acc: acc(alpha0)-acc(alpha). Loss: loss(alpha)-loss(alpha0)."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    mean_key = f"{metric}_mean"
-    std_key = f"{metric}_std"
+    mean_key = f"{metric}_deg_mean"
+    std_key = f"{metric}_deg_std"
     if metric == "acc":
         ylabel = "Degradation (acc(alpha0) - acc(alpha))"
     else:
@@ -227,23 +300,15 @@ def plot_degradation_curves(aggregated, regime, metric, out_path, dataset, log_x
             continue
         alphas = agg["alphas"]
         mean = agg[mean_key]
-        i0 = baseline_alpha_index(alphas)
-        if i0 is None:
-            continue
-        baseline = mean[i0]
-        if metric == "acc":
-            degradation = baseline - mean
-        else:
-            degradation = mean - baseline
         std = agg[std_key]
-        ax.plot(alphas, degradation, label=arch)
+        ax.plot(alphas, mean, label=arch)
         if std is not None and np.any(std > 0):
-            ax.fill_between(alphas, degradation - std, degradation + std, alpha=0.25)
+            ax.fill_between(alphas, mean - std, mean + std, alpha=0.25)
     ax.set_xlabel("alpha_test")
     ax.set_ylabel(ylabel)
     ax.set_title(f"{dataset} - {regime}: degradation ({metric})")
     if log_x:
-        ax.set_xscale("log")
+        ax.set_xscale("symlog", linthresh=1e-3)
     ax.legend(loc="best", fontsize=8)
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
@@ -400,7 +465,7 @@ def main():
     summary_rows = load_summary(results_dir)
 
     if not sweep_rows:
-        print("No sweep.csv or missing expected columns. Generate what we can from summary only.", file=sys.stderr)
+        print("No sweep data (sweep.csv and results.json sweep not found or empty). Generate what we can from summary only.", file=sys.stderr)
 
     sweep_rows = filter_rows(sweep_rows, args.regimes, args.architectures)
     summary_rows = [r for r in summary_rows if r.get("regime") in {s.strip() for s in args.regimes.split(",")}]
@@ -415,6 +480,7 @@ def main():
         aggregated = aggregate_sweep(sweep_rows)
         global_alphas = global_alpha_set(aggregated)
         warn_missing_alpha(aggregated, global_alphas)
+        warn_baseline_not_zero(aggregated)
         print_table(aggregated, regimes_order=regimes_list)
 
         for regime in regimes_list:

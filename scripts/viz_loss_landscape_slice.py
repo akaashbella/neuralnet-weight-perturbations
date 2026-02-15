@@ -23,12 +23,28 @@ from noise import get_weight_only_params
 
 
 def find_checkpoint(checkpoint_dir, arch, regime, seed):
-    """Return path to checkpoint matching {arch}_{regime}_seed{seed}_*.pt, or None."""
+    """Return path to checkpoint matching {arch}_{regime}_seed{seed}_*.pt (most recent by mtime), or None."""
     pattern = os.path.join(checkpoint_dir, f"{arch}_{regime}_seed{seed}_*.pt")
     candidates = glob.glob(pattern)
     if not candidates:
         return None
-    return candidates[0]
+    chosen = max(candidates, key=os.path.getmtime)
+    print(f"Using checkpoint: {chosen}", file=sys.stderr)
+    return chosen
+
+
+def _extract_state_dict(loaded):
+    """Extract state_dict from common wrapped formats. Raise with available keys if unrecognized."""
+    if isinstance(loaded, dict):
+        if "state_dict" in loaded:
+            return loaded["state_dict"]
+        if "model_state_dict" in loaded:
+            return loaded["model_state_dict"]
+        keys = list(loaded.keys())
+        if keys and all("." in str(k) for k in keys[:min(20, len(keys))]):
+            return loaded
+        raise ValueError(f"Checkpoint dict has no 'state_dict' or 'model_state_dict'; available keys: {keys}")
+    raise TypeError(f"Checkpoint must be dict (with state_dict/model_state_dict or param-like keys); got {type(loaded).__name__}")
 
 
 def make_random_directions(weight_params, device, seed=42):
@@ -97,6 +113,8 @@ def main():
     parser.add_argument("--span", type=float, default=0.5, help="Range for each axis: [-span, span].")
     parser.add_argument("--batch_limit", type=int, default=10, help="Max batches per grid point for loss eval.")
     parser.add_argument("--dir_seed", type=int, default=42, help="Seed for random direction vectors.")
+    parser.add_argument("--split", choices=["train", "test"], default="train",
+                        help="Data split for loss evaluation (default: train; train loss aligns with training objective).")
     args = parser.parse_args()
 
     checkpoint_dir = os.path.join(config.CHECKPOINT_DIR, args.dataset)
@@ -116,7 +134,8 @@ def main():
         return 1
 
     try:
-        state = torch.load(ckpt_path, map_location=config.DEVICE)
+        loaded = torch.load(ckpt_path, map_location=config.DEVICE)
+        state = _extract_state_dict(loaded)
         model.load_state_dict(state)
     except Exception as e:
         print(f"Failed to load checkpoint {ckpt_path}: {e}", file=sys.stderr)
@@ -125,10 +144,12 @@ def main():
     resize = ARCH_INPUT_RESIZE.get(args.arch, 32)
     resize = resize if resize != 32 else None
     try:
-        _, test_loader = get_loaders(args.dataset, resize=resize)
+        train_loader, test_loader = get_loaders(args.dataset, resize=resize)
     except Exception as e:
         print(f"Failed to get data loaders for {args.dataset}: {e}", file=sys.stderr)
         return 1
+    loader = train_loader if args.split == "train" else test_loader
+    print(f"Evaluating {args.split} loss on grid (batch_limit={args.batch_limit} per point).", file=sys.stderr)
 
     weight_params = get_weight_only_params(model)
     if not weight_params:
@@ -137,7 +158,6 @@ def main():
 
     orig_list, d1_list, d2_list = make_random_directions(weight_params, config.DEVICE, seed=args.dir_seed)
 
-    # Grid
     grid = args.grid
     span = args.span
     avals = np.linspace(-span, span, grid)
@@ -146,13 +166,15 @@ def main():
     device = config.DEVICE
 
     print(f"Evaluating loss on {grid}x{grid} grid (batch_limit={args.batch_limit} per point)...")
-    for i, a in enumerate(avals):
-        for j, b in enumerate(bvals):
-            set_weights(weight_params, orig_list, float(a), float(b), d1_list, d2_list)
-            loss_grid[i, j] = evaluate_loss(model, test_loader, device, args.batch_limit)
-        if (i + 1) % 5 == 0 or i == 0:
-            print(f"  row {i + 1}/{grid} done")
-    restore_weights(weight_params, orig_list)
+    try:
+        for i, a in enumerate(avals):
+            for j, b in enumerate(bvals):
+                set_weights(weight_params, orig_list, float(a), float(b), d1_list, d2_list)
+                loss_grid[i, j] = evaluate_loss(model, loader, device, args.batch_limit)
+            if (i + 1) % 5 == 0 or i == 0:
+                print(f"  row {i + 1}/{grid} done")
+    finally:
+        restore_weights(weight_params, orig_list)
 
     # Save outputs
     out_dir = os.path.join(
@@ -178,21 +200,21 @@ def main():
     ax.clabel(cs, inline=True, fontsize=8)
     ax.set_xlabel("direction 1")
     ax.set_ylabel("direction 2")
-    ax.set_title(f"Loss contour: {args.dataset} {args.arch} {args.regime} seed{args.seed}")
+    ax.set_title(f"Loss contour ({args.split}): {args.dataset} {args.arch} {args.regime} seed{args.seed}")
     fig.tight_layout()
     contour_path = os.path.join(out_dir, "loss_contour.png")
     fig.savefig(contour_path, dpi=150)
     plt.close()
     print(f"Saved {contour_path}")
 
-    # Surface
+    # Surface (viridis for consistent color scale)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     ax.plot_surface(A, B, L, cmap="viridis", alpha=0.9)
     ax.set_xlabel("direction 1")
     ax.set_ylabel("direction 2")
     ax.set_zlabel("Loss")
-    ax.set_title(f"Loss surface: {args.dataset} {args.arch} {args.regime} seed{args.seed}")
+    ax.set_title(f"Loss surface ({args.split}): {args.dataset} {args.arch} {args.regime} seed{args.seed}")
     fig.tight_layout()
     surface_path = os.path.join(out_dir, "loss_surface.png")
     fig.savefig(surface_path, dpi=150)

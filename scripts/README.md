@@ -26,11 +26,11 @@ python scripts/viz_sweep.py --dataset cifar10 [options]
 - `--architectures` - Optional comma-separated architecture filter; empty = all.
 - `--out_dir` - Output directory; if empty, uses `./results/figures/<dataset>/`.
 - `--show` - Call `plt.show()` after saving (interactive).
-- `--log_x` - Use log scale for alpha_test on curve plots.
+- `--log_x` - Use symlog scale for alpha_test on curve plots (linthresh=1e-3 so alpha=0 is allowed).
 
 **Inputs**
 
-- Reads `./results/<dataset>/sweep.csv` with exact headers: `architecture`, `regime`, `seed`, `dataset`, `alpha_train`, `alpha_test`, `acc`, `loss`. Uses `acc` and `loss` directly (no column guessing).
+- Reads `./results/<dataset>/sweep.csv` with exact headers: `architecture`, `regime`, `seed`, `dataset`, `alpha_train`, `alpha_test`, `acc`, `loss`. Uses `acc` and `loss` directly. If sweep.csv is missing, tries `./results/<dataset>/results.json` and uses its `"sweep"` array (fallback only).
 - Reads `./results/<dataset>/summary.csv` if present (optional; used for drop_at_01 plot).
 
 If a file is missing or sweep.csv has wrong columns, the script prints a clear message and still generates what it can.
@@ -39,15 +39,15 @@ If a file is missing or sweep.csv has wrong columns, the script prints a clear m
 
 - `robustness_curves_acc_<regime>.png` - Accuracy vs alpha_test, one line per architecture.
 - `robustness_curves_loss_<regime>.png` - Loss vs alpha_test.
-- `degradation_curves_acc_<regime>.png` - acc(alpha0) - acc(alpha) per regime.
-- `degradation_curves_loss_<regime>.png` - loss(alpha) - loss(alpha0) per regime.
+- `degradation_curves_acc_<regime>.png` - acc(alpha0) - acc(alpha) per regime; std band is computed per seed then aggregated (correct degradation std).
+- `degradation_curves_loss_<regime>.png` - loss(alpha) - loss(alpha0) per regime; same per-seed std.
 - `auc_by_arch_acc.png` - Trapezoidal AUC of accuracy by architecture and regime.
 - `auc_by_arch_loss.png` - Trapezoidal AUC of loss by architecture and regime.
 - `initial_sensitivity_acc.png` - Initial sensitivity (acc drop from baseline to min positive alpha).
 - `initial_sensitivity_loss.png` - Initial sensitivity (loss rise from baseline to min positive alpha).
 - `drop_at_01.png` - Drop at alpha_test=0.1 from summary.csv (if available).
 
-Baseline alpha0 is the alpha_test value closest to 0 (tolerance 1e-12). Aggregation: mean and std over seeds per (architecture, regime, alpha_test). A text table (architecture, regime, acc0, loss0, auc_acc, auc_loss, sens_acc, sens_loss) is printed to stdout. If an (arch, regime) is missing alpha_test values vs the global set, a warning is printed and AUC/sensitivity use the available range only.
+Baseline alpha0 is the alpha_test value closest to 0 (argmin |alpha|). A warning is printed if baseline is not exactly 0 (missing alpha=0 data). Aggregation: mean and std over seeds per (architecture, regime, alpha_test); degradation curves use per-seed degradation then mean/std over seeds. The script prints the expected global alpha_test list once to stderr; if an (arch, regime) is missing values vs that set, a warning is printed and AUC/sensitivity use the available range only.
 
 ---
 
@@ -72,14 +72,15 @@ python scripts/viz_loss_landscape_slice.py --dataset cifar10 --arch cnn_large --
 - `--seed` - Checkpoint seed (default: 0).
 - `--grid` - Grid size, e.g. 31 for 31x31 points (default: 31).
 - `--span` - Range for each direction axis: [-span, span] (default: 0.5).
-- `--batch_limit` - Max number of batches from the test loader per grid point (default: 10).
+- `--batch_limit` - Max number of batches per grid point (default: 10).
 - `--dir_seed` - Random seed for the two direction vectors (default: 42).
+- `--split` - Data split for loss: `train` or `test` (default: `train`). Train loss aligns with training objective; test loss mixes geometry with generalization.
 
 **Inputs**
 
-- Checkpoint: `./checkpoints/<dataset>/<arch>_<regime>_seed<seed>_*.pt` (pattern match).
+- Checkpoint: `./checkpoints/<dataset>/<arch>_<regime>_seed<seed>_*.pt` (pattern match; most recent by modification time is chosen). Loading supports wrapped formats: if the file contains a dict with `state_dict` or `model_state_dict`, that is used; otherwise param-like keys (with dots) are treated as state_dict.
 - Model is created via the repo model factory (`models.get_model`).
-- Data: repo data loaders for the given dataset.
+- Data: repo `get_loaders`; train or test loader is selected by `--split`.
 
 **Outputs**
 
